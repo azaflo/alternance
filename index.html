@@ -548,6 +548,7 @@
 <div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
   <div class="modal">
     <h3 id="modal-title">Nouvelle candidature</h3>
+    <input type="hidden" id="f-offer-id" value="" />
     <div class="form-group">
       <label>Entreprise *</label>
       <input type="text" id="f-company" placeholder="Ex : Thales, Orange, SFR..." />
@@ -606,6 +607,14 @@
   const STORAGE_KEY  = 'candidatures_v1';
 
   const getToken = () => localStorage.getItem(GH_TOKEN_KEY) || '';
+  const appliedOfferIds = new Set(JSON.parse(localStorage.getItem('applied_offers') || '[]'));
+  function markOfferApplied(id) {
+    if (!id) return;
+    appliedOfferIds.add(id);
+    localStorage.setItem('applied_offers', JSON.stringify([...appliedOfferIds]));
+    const card = document.getElementById('offer-card-' + id);
+    if (card) card.remove();
+  }
   const getSHA   = () => localStorage.getItem(GH_SHA_KEY)   || '';
 
   function setSyncStatus(status) {
@@ -838,6 +847,7 @@
       document.getElementById('f-status').value   = 'envoye';
       document.getElementById('f-link').value     = '';
       document.getElementById('f-notes').value    = '';
+      document.getElementById('f-offer-id').value = '';
     }
 
     overlay.classList.add('open');
@@ -879,6 +889,7 @@
     }
 
     save(entries);
+    markOfferApplied(document.getElementById('f-offer-id').value);
     closeModal();
     renderTable();
   }
@@ -976,8 +987,8 @@
       if (o.coverLetter) coverLetters[o.id] = { title: o.title, company: o.company, location: o.location || '', letter: o.coverLetter, hrEmail: o.hrEmail || '' };
     });
 
-    container.innerHTML = offers.map(o => `
-      <div class="offer-card">
+    container.innerHTML = offers.filter(o => !appliedOfferIds.has(o.id)).map(o => `
+      <div class="offer-card" id="offer-card-${o.id}">
         <div class="offer-logo">${o.logo || '🏢'}</div>
         <div class="offer-info">
           <div class="title">${escHtml(o.title)}</div>
@@ -1004,6 +1015,7 @@
       document.getElementById('f-company').value  = o.company || '';
       document.getElementById('f-position').value = o.title   || '';
       document.getElementById('f-link').value     = o.url     || '';
+      document.getElementById('f-offer-id').value = o.id      || '';
     }, 50);
   };
 
