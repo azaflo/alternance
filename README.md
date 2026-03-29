@@ -1,0 +1,1 @@
+création d'un site ou sont regroupé toutes les candidature, recupération des candidatures via indeed et linkedin, automatiser de l'envoie de cv et d'une lettre de motivation sur le site en question puis recherche du mail du recruteur pour envoie d'un mail perso avec lettre de motivation et cv
