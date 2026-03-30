@@ -1,9 +1,11 @@
 name: Auto-Enrich Hunter
+
 on:
   push:
     branches: [ main ]
     paths:
       - 'index.html'
+  workflow_dispatch:  
 
 jobs:
   enrich:
