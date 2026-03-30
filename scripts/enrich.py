@@ -2,14 +2,17 @@ import os
 import requests
 import re
 
+# Configuration
 API_KEY = os.getenv("HUNTER_API_KEY")
 FILE_PATH = "index.html"
 
 def get_email(company_name):
-    # On définit le domaine selon l'entreprise
-    domain = f"{company_name.lower().replace(' ', '')}.com"
-    if "thales" in domain.lower(): domain = "thalesgroup.com"
-    if "airbus" in domain.lower(): domain = "airbus.com"
+    if not API_KEY: return None
+    # Nettoyage simple du domaine
+    domain = company_name.lower().replace(' ', '').replace('é', 'e').replace('è', 'e')
+    if "thales" in domain: domain = "thalesgroup.com"
+    if "airbus" in domain: domain = "airbus.com"
+    if "." not in domain: domain += ".com"
     
     url = f"https://api.hunter.io/v2/domain-search?domain={domain}&api_key={API_KEY}"
     try:
@@ -19,27 +22,35 @@ def get_email(company_name):
     except: pass
     return None
 
-# Lecture du fichier
+if not os.path.exists(FILE_PATH):
+    print("Fichier index.html introuvable")
+    exit(1)
+
 with open(FILE_PATH, 'r', encoding='utf-8') as f:
     content = f.read()
 
-def replace_emails(match):
+# On utilise une fonction de remplacement plus propre pour éviter l'erreur de groupe
+def replace_func(match):
+    full_block = match.group(0)
     company = match.group(1)
     email_val = match.group(2)
     
-    # Si l'email est vide ou ne contient pas de @
+    # Si le champ email est vide
     if not email_val.strip() or "@" not in email_val:
-        new_email = get_email(company)
-        if new_email:
-            print(f"✅ Insertion de l'email pour {company} : {new_email}")
-            return f'company: "{company}",\n      hrEmail: "{new_email}"'
+        print(f"🔎 Recherche pour : {company}")
+        found_email = get_email(company)
+        if found_email:
+            print(f"✅ Trouvé : {found_email}")
+            # On reconstruit la ligne proprement sans utiliser de backreferences complexes
+            return f'company: "{company}",\n      hrEmail: "{found_email}"'
     
-    return match.group(0)
+    return full_block
 
-# Cette regex cherche le bloc company + hrEmail peu importe les espaces
+# La regex cherche : company: "NOM", (retour à la ligne) hrEmail: "VALEUR"
 pattern = r'company:\s*"(.*?)",\s*hrEmail:\s*"(.*?)"'
-updated_content = re.sub(pattern, replace_emails, content, flags=re.DOTALL)
+new_content = re.sub(pattern, replace_func, content, flags=re.DOTALL)
 
-# Sauvegarde
 with open(FILE_PATH, 'w', encoding='utf-8') as f:
-    f.write(updated_content)
+    f.write(new_content)
+
+print("Terminé avec succès.")
