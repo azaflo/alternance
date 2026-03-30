@@ -3,7 +3,7 @@ import os, requests, re
 API_KEY = os.getenv("HUNTER_API_KEY")
 FILE_PATH = "index.html"
 
-def get_best_idf_email(company_name):
+def get_best_operational_email(company_name):
     url = f"https://api.hunter.io/v2/domain-search?company={company_name}&api_key={API_KEY}"
     
     try:
@@ -11,11 +11,16 @@ def get_best_idf_email(company_name):
         emails = res.get('data', {}).get('emails', [])
         if not emails: return None
 
-        # Lexique IDF : Villes et départements clés de l'informatique
-        idf_keywords = ['paris', 'idf', 'ile-de-france', 'nanterre', 'velizy', 'courbevoie', 'la defense', '75', '92', '94', '78', '91']
-        it_rh_keywords = ['dsi', 'it', 'tech', 'infra', 'reseau', 'system', 'cyber', 'rh', 'hr', 'recrut', 'talent', 'job']
+        # --- CONFIGURATION DES FILTRES ---
+        idf_cities = ['paris', 'idf', 'chatenay', 'nanterre', 'velizy', '92', '75', '94', '78']
         
-        valid_emails = []
+        # Mots-clés qu'on ADORE (Technique de terrain ou RH)
+        target_keywords = ['recrut', 'rh', 'hr', 'talent', 'it ', 'infra', 'reseau', 'system', 'support', 'informatique', 'admin', 'tech']
+        
+        # Mots-clés qu'on ÉVITE (Les trop hauts placés / VIP)
+        vip_keywords = ['head of', 'director', 'directeur', 'chief', 'president', 'vp ', 'vice president', 'dg ', 'general manager']
+
+        valid_profiles = []
 
         for e in emails:
             email_val = e.get('value', '').lower()
@@ -24,46 +29,46 @@ def get_best_idf_email(company_name):
 
             score = 0
             
-            # CRITÈRE 1 : Bonus FRANCE (.fr)
+            # 1. Bonus France/IDF (Base 10-20 pts)
             if email_val.endswith('.fr'): score += 10
+            if any(city in profil for city in idf_cities): score += 15
+
+            # 2. Bonus Métier Cible (SISR / RH)
+            if any(word in profil for word in target_keywords):
+                score += 30
             
-            # CRITÈRE 2 : Bonus ILE-DE-FRANCE (Le Graal pour toi)
-            if any(city in profil for city in idf_keywords):
-                score += 20
-                print(f"   📍 Localisation IDF détectée pour : {email_val}")
+            # 3. MALUS VIP (On baisse le score des grands chefs)
+            if any(word in profil for word in vip_keywords):
+                score -= 40
+                print(f"   ⚠️ Profil trop haut placé ignoré : {position}")
 
-            # CRITÈRE 3 : Bonus METIER (IT/RH)
-            if any(word in profil for word in it_rh_keywords):
-                score += 15
+            if score > 5:
+                valid_profiles.append({'email': e['value'], 'score': score, 'pos': position})
 
-            # On ne garde que les profils qui ont au moins un bonus France ou IDF
-            if score >= 10:
-                valid_emails.append({'email': e['value'], 'score': score, 'pos': position})
-
-        if valid_emails:
-            # On trie pour avoir le meilleur score (IDF + IT + FR) en premier
-            valid_emails.sort(key=lambda x: x['score'], reverse=True)
-            best = valid_emails[0]
-            print(f"   🎯 Top match : {best['email']} (Score: {best['score']})")
+        if valid_profiles:
+            # On prend celui qui a le meilleur score après malus
+            valid_profiles.sort(key=lambda x: x['score'], reverse=True)
+            best = valid_profiles[0]
+            print(f"   🎯 Match retenu : {best['email']} (Poste: {best['pos']}) [Score: {best['score']}]")
             return best['email']
             
     except: pass
     return None
 
-# --- Logique de mise à jour (le reste du script est identique) ---
+# --- Logique de mise à jour ---
 with open(FILE_PATH, 'r', encoding='utf-8') as f:
     content = f.read()
 
 pattern = r'company:\s*"(.*?)".*?hrEmail:\s*""'
 matches = list(re.finditer(pattern, content, re.DOTALL))
 
-print(f"📊 Analyse de {len(matches)} offres - Cible : Île-de-France...")
+print(f"📊 Filtrage de {len(matches)} offres (Focus Opérationnel)...")
 
 found_count = 0
 for match in matches:
     name = match.group(1)
-    print(f"\n🔎 Recherche IDF pour : {name}")
-    email = get_best_idf_email(name)
+    print(f"\n🔎 Recherche pour : {name}")
+    email = get_best_operational_email(name)
     if email:
         old_block = match.group(0)
         new_block = old_block.replace('hrEmail: ""', f'hrEmail: "{email}"')
@@ -72,6 +77,6 @@ for match in matches:
 
 if found_count > 0:
     with open(FILE_PATH, 'w', encoding='utf-8') as f: f.write(content)
-    print(f"\n🚀 SUCCESS : {found_count} mails localisés ajoutés !")
+    print(f"\n🚀 SUCCESS : {found_count} mails opérationnels ajoutés.")
 else:
-    print("\nℹ️ Aucun mail IDF trouvé.")
+    print("\nℹ️ Aucun mail correspondant au profil 'Alternant' trouvé.")
