@@ -4,8 +4,12 @@ API_KEY = os.getenv("HUNTER_API_KEY")
 FILE_PATH = "index.html"
 
 def get_official_domain(company_name):
+    # Nettoyage des accents
     clean_name = "".join(c for c in unicodedata.normalize('NFD', company_name) if unicodedata.category(c) != 'Mn')
-    url = f"https://api.hunter.io/v2/companies/suggest?name={clean_name}"
+    
+    # CORRECTIF : On ajoute l'API_KEY ici aussi !
+    url = f"https://api.hunter.io/v2/companies/suggest?name={clean_name}&api_key={API_KEY}"
+    
     try:
         res = requests.get(url, timeout=10).json()
         if res.get('data') and len(res['data']) > 0:
@@ -13,7 +17,7 @@ def get_official_domain(company_name):
             print(f"   🌐 Domaine identifié : {dom}")
             return dom
     except: pass
-    print(f"   ⚠️ Impossible de trouver le domaine pour {company_name}")
+    print(f"   ⚠️ Impossible de trouver le domaine pour {company_name} (Vérifie ta clé API)")
     return None
 
 def get_email_from_domain(domain):
@@ -22,12 +26,12 @@ def get_email_from_domain(domain):
     try:
         res = requests.get(url, timeout=10).json()
         emails = res.get('data', {}).get('emails', [])
-        print(f"   📦 Hunter a trouvé {len(emails)} mails au total sur ce domaine.")
+        print(f"   📦 Hunter a trouvé {len(emails)} mails au total.")
         
         if not emails: return None
 
-        # On élargit les mots-clés pour ne rien rater
-        keywords = ['dsi', 'cto', 'infra', 'reseau', 'system', 'cyber', 'it', 'rh', 'hr', 'recrut', 'talent', 'job', 'contact', 'info']
+        # Filtre intelligent : Priorité aux RH et à l'IT (SISR/Licence)
+        keywords = ['dsi', 'cto', 'infra', 'reseau', 'system', 'cyber', 'it', 'rh', 'hr', 'recrut', 'talent', 'job', 'contact']
 
         for e in emails:
             email_val = e.get('value', '').lower()
@@ -38,24 +42,20 @@ def get_email_from_domain(domain):
                 print(f"   🎯 Cible trouvée : {email_val} ({position})")
                 return e['value']
         
-        # Secours : on prend le 1er mail même s'il n'est pas "IT/RH" si le score est bon
-        print(f"   💡 Pas de cible précise, on prend le meilleur mail par défaut.")
+        # Secours : on prend le 1er mail si bon score
         return emails[0]['value']
             
-    except Exception as err:
-        print(f"   ❌ Erreur API : {err}")
+    except: pass
     return None
 
 # --- Logique principale ---
 with open(FILE_PATH, 'r', encoding='utf-8') as f:
     content = f.read()
 
-# Debug : On affiche un extrait du fichier pour voir si la Regex va marcher
-print(f"🔍 DEBUG : Analyse du fichier {FILE_PATH}...")
 pattern = r'company:\s*"(.*?)".*?hrEmail:\s*""'
 matches = list(re.finditer(pattern, content, re.DOTALL))
 
-print(f"📊 Nombre d'offres vides détectées par le radar : {len(matches)}")
+print(f"📊 {len(matches)} offres vides détectées. Lancement...")
 
 found_count = 0
 for match in matches:
@@ -74,6 +74,6 @@ for match in matches:
 if found_count > 0:
     with open(FILE_PATH, 'w', encoding='utf-8') as f:
         f.write(content)
-    print(f"\n🚀 TERMINE : {found_count} mails injectés dans l'index.html !")
+    print(f"\n🚀 TERMINE : {found_count} mails injectés !")
 else:
-    print("\nℹ️ Fin du scan : Aucun mail n'a été retenu.")
+    print("\nℹ️ Aucun mail trouvé (Vérifie tes crédits Hunter.io)")
