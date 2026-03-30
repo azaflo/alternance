@@ -1,77 +1,77 @@
 import os, requests, re
 
-# Récupération de la clé
 API_KEY = os.getenv("HUNTER_API_KEY")
 FILE_PATH = "index.html"
 
-# Petit test de sécurité au démarrage
-if not API_KEY or len(API_KEY) < 5:
-    print("❌ ERREUR : La clé API Hunter est absente ou mal configurée dans les Secrets GitHub.")
-    exit(1)
-
-def get_email_by_company_name(company_name):
-    # Hunter permet de chercher directement par 'company' au lieu de 'domain'
+def get_best_idf_email(company_name):
     url = f"https://api.hunter.io/v2/domain-search?company={company_name}&api_key={API_KEY}"
     
     try:
-        response = requests.get(url, timeout=10)
-        
-        # Diagnostic si l'API répond une erreur
-        if response.status_code == 401:
-            print(f"   ❌ Erreur 401 : Ta clé API est invalide.")
-            return None
-        if response.status_code == 429:
-            print(f"   ❌ Erreur 429 : Quota atteint ou trop de requêtes.")
-            return None
-            
-        res = response.json()
+        res = requests.get(url, timeout=10).json()
         emails = res.get('data', {}).get('emails', [])
-        
-        if not emails:
-            print(f"   ⚠️ Hunter n'a trouvé aucun mail pour '{company_name}'.")
-            return None
+        if not emails: return None
 
-        print(f"   ✅ {len(emails)} mails trouvés pour {company_name}.")
+        # Lexique IDF : Villes et départements clés de l'informatique
+        idf_keywords = ['paris', 'idf', 'ile-de-france', 'nanterre', 'velizy', 'courbevoie', 'la defense', '75', '92', '94', '78', '91']
+        it_rh_keywords = ['dsi', 'it', 'tech', 'infra', 'reseau', 'system', 'cyber', 'rh', 'hr', 'recrut', 'talent', 'job']
         
-        # On cherche un profil IT ou RH en priorité
-        keywords = ['dsi', 'cto', 'infra', 'reseau', 'system', 'cyber', 'it', 'rh', 'hr', 'recrut', 'talent', 'job']
+        valid_emails = []
+
         for e in emails:
-            profil = f"{e.get('value', '')} {e.get('position', '')}".lower()
-            if any(word in profil for word in keywords):
-                return e['value']
-        
-        # Sinon on prend le premier
-        return emails[0]['value']
-        
-    except Exception as e:
-        print(f"   ❌ Erreur de connexion : {e}")
+            email_val = e.get('value', '').lower()
+            position = (e.get('position') or "").lower()
+            profil = f"{email_val} {position}"
+
+            score = 0
+            
+            # CRITÈRE 1 : Bonus FRANCE (.fr)
+            if email_val.endswith('.fr'): score += 10
+            
+            # CRITÈRE 2 : Bonus ILE-DE-FRANCE (Le Graal pour toi)
+            if any(city in profil for city in idf_keywords):
+                score += 20
+                print(f"   📍 Localisation IDF détectée pour : {email_val}")
+
+            # CRITÈRE 3 : Bonus METIER (IT/RH)
+            if any(word in profil for word in it_rh_keywords):
+                score += 15
+
+            # On ne garde que les profils qui ont au moins un bonus France ou IDF
+            if score >= 10:
+                valid_emails.append({'email': e['value'], 'score': score, 'pos': position})
+
+        if valid_emails:
+            # On trie pour avoir le meilleur score (IDF + IT + FR) en premier
+            valid_emails.sort(key=lambda x: x['score'], reverse=True)
+            best = valid_emails[0]
+            print(f"   🎯 Top match : {best['email']} (Score: {best['score']})")
+            return best['email']
+            
+    except: pass
     return None
 
-# --- Lecture et traitement ---
+# --- Logique de mise à jour (le reste du script est identique) ---
 with open(FILE_PATH, 'r', encoding='utf-8') as f:
     content = f.read()
 
 pattern = r'company:\s*"(.*?)".*?hrEmail:\s*""'
 matches = list(re.finditer(pattern, content, re.DOTALL))
 
-print(f"📊 Analyse de {len(matches)} offres en cours...")
+print(f"📊 Analyse de {len(matches)} offres - Cible : Île-de-France...")
 
 found_count = 0
 for match in matches:
     name = match.group(1)
-    print(f"\n🔎 Recherche : {name}")
-    
-    email = get_email_by_company_name(name)
+    print(f"\n🔎 Recherche IDF pour : {name}")
+    email = get_best_idf_email(name)
     if email:
-        print(f"   📧 Email retenu : {email}")
         old_block = match.group(0)
         new_block = old_block.replace('hrEmail: ""', f'hrEmail: "{email}"')
         content = content.replace(old_block, new_block)
         found_count += 1
 
 if found_count > 0:
-    with open(FILE_PATH, 'w', encoding='utf-8') as f:
-        f.write(content)
-    print(f"\n🚀 SUCCESS : {found_count} offres mises à jour !")
+    with open(FILE_PATH, 'w', encoding='utf-8') as f: f.write(content)
+    print(f"\n🚀 SUCCESS : {found_count} mails localisés ajoutés !")
 else:
-    print("\nℹ️ Aucun changement effectué.")
+    print("\nℹ️ Aucun mail IDF trouvé.")
