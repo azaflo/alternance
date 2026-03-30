@@ -21,17 +21,29 @@ def get_official_domain(company_name):
     return None
 
 def get_email_from_domain(domain):
-    """ Étape 2 : Cherche l'email sur ce domaine """
     if not domain: return None
-    url = f"https://api.hunter.io/v2/domain-search?domain={domain}&api_key={API_KEY}"
+    # On ajoute le paramètre 'department=hr' pour cibler les RH
+    url = f"https://api.hunter.io/v2/domain-search?domain={domain}&department=hr&api_key={API_KEY}"
     try:
         res = requests.get(url, timeout=10).json()
-        if res.get('data') and res['data']['emails']:
-            return res['data']['emails'][0]['value']
+        emails = res.get('data', {}).get('emails', [])
+        
+        if emails:
+            # On cherche en priorité un mail qui contient 'recrutement', 'hr', 'rh' ou 'jobs'
+            for e in emails:
+                val = e['value'].lower()
+                if any(word in val for word in ['recrutement', 'rh', 'hr', 'jobs', 'career']):
+                    print(f"🎯 Mail RH trouvé spécifiquement : {val}")
+                    return e['value']
+            
+            # Si pas de mot-clé, on prend le premier mail avec le meilleur score de confiance
+            if emails[0]['confidence'] > 80:
+                print(f"✅ Mail à haute confiance trouvé : {emails[0]['value']}")
+                return emails[0]['value']
     except:
         pass
     return None
-
+    
 # --- Logique principale ---
 with open(FILE_PATH, 'r', encoding='utf-8') as f:
     content = f.read()
