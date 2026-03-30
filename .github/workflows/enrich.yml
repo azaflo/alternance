@@ -10,16 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+
       - name: Install dependencies
         run: pip install requests
+
       - name: Run Enrichment
         env:
           HUNTER_API_KEY: ${{ secrets.HUNTER_API_KEY }}
         run: python scripts/enrich.py
+
       - name: Commit & Push
         run: |
           git config --global user.name "GitHub Action"
