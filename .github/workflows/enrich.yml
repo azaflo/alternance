@@ -1,0 +1,29 @@
+name: Auto-Enrich Hunter
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'index.html'
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Run Enrichment
+        env:
+          HUNTER_API_KEY: ${{ secrets.HUNTER_API_KEY }}
+        run: python scripts/enrich_emails.py
+      - name: Commit & Push
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add index.html
+          git commit -m "auto: email enrichi" || echo "No changes"
+          git push
