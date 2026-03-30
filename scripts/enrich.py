@@ -42,7 +42,7 @@ def get_best_operational_email(company_name):
                 score -= 40
                 print(f"   ⚠️ Profil trop haut placé ignoré : {position}")
 
-            if score > 5:
+            if score > 15:
                 valid_profiles.append({'email': e['value'], 'score': score, 'pos': position})
 
         if valid_profiles:
