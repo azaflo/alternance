@@ -19,19 +19,45 @@ def get_official_domain(company_name):
 
 def get_email_from_domain(domain):
     if not domain: return None
-    # On cherche tous les mails du domaine
+    
+    # On enlève le filtre strict "&department=hr" de l'URL pour chercher tout le monde (notamment la DSI)
     url = f"https://api.hunter.io/v2/domain-search?domain={domain}&api_key={API_KEY}"
     try:
         res = requests.get(url, timeout=10).json()
         emails = res.get('data', {}).get('emails', [])
         if not emails: return None
 
-        # 1. On cherche d'abord un mail RH/Recrutement
+        # Nos deux listes de mots-clés "Cibles"
+        it_keywords = ['dsi', 'cto', 'infrastructure', 'infra', 'réseau', 'reseau', 'système', 'systeme', 'cyber', 'sécurité', 'security', 'cloud', 'devops', 'support', 'informatique', 'it ']
+        hr_keywords = ['recrutement', 'rh', 'hr', 'talent', 'ressources humaines', 'recruiter']
+
+        # 1. On cherche d'abord le Graal : Un manager Tech/SISR ou un RH
         for e in emails:
-            val = e['value'].lower()
-            if any(word in val for word in ['recrutement', 'rh', 'hr', 'job', 'career', 'talent']):
-                print(f"🎯 Mail RH trouvé : {val}")
-                return e['value']
+            email_val = e.get('value', '').lower()
+            position = (e.get('position') or "").lower() # Le titre du poste (ex: "Directeur Informatique")
+            department = (e.get('department') or "").lower()
+            
+            # On regroupe tout le profil dans une seule phrase pour chercher nos mots-clés
+            profil_complet = f"{email_val} {position} {department}"
+
+            # Est-ce un manager IT / SISR ?
+            if any(word in profil_complet for word in it_keywords):
+                print(f"👨‍💻 Manager IT trouvé ! (Poste : {position.title()}) -> {email_val}")
+                return email_val
+            
+            # Est-ce un profil RH ?
+            if any(word in profil_complet for word in hr_keywords):
+                print(f"🎯 Profil RH trouvé ! (Poste : {position.title()}) -> {email_val}")
+                return email_val
+        
+        # 2. Si on n'a ni RH ni Tech, on prend l'e-mail le plus fiable (> 70% de confiance)
+        best_email = emails[0]
+        if best_email.get('confidence', 0) > 70:
+            print(f"✅ E-mail pro fiable (Fiabilité: {best_email['confidence']}%) -> {best_email['value']}")
+            return best_email['value']
+            
+    except: pass
+    return None
         
         # 2. Si pas de RH, on prend le mail le plus fiable (> 70% de confiance)
         best_email = emails[0]
