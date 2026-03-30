@@ -19,7 +19,7 @@ jobs:
       - name: Run Enrichment
         env:
           HUNTER_API_KEY: ${{ secrets.HUNTER_API_KEY }}
-        run: python scripts/enrich_emails.py
+        run: python scripts/enrich.py
       - name: Commit & Push
         run: |
           git config --global user.name "GitHub Action"
