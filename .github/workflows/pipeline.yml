@@ -1,0 +1,38 @@
+name: Pipeline Sourcing SISR
+
+on:
+  push:
+    branches: [ "main" ] # Se lance quand tu modifies le fichier sur 'main'
+  workflow_dispatch: # Permet d'ajouter un bouton "Run workflow" pour le lancer à la main
+
+jobs:
+  enrich_data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Récupération du code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Installation de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 📦 Installation des dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests googlesearch-python
+
+      - name: 🚀 Lancement du script
+        env:
+          HUNTER_API_KEY: ${{ secrets.HUNTER_API_KEY }}
+        run: python enrich.py
+
+      - name: 💾 Sauvegarde et Push (Auto-injection)
+        run: |
+          git config --global user.name "SISR-Bot"
+          git config --global user.email "bot@github-actions.com"
+          git add index.html
+          # On commit uniquement si le script a modifié index.html
+          git diff --quiet && git diff --staged --quiet || git commit -m "🤖 Auto-update : Contacts qualifiés ajoutés"
+          git push
