@@ -24,8 +24,7 @@ jobs:
       - name: Run Enrichment
         env:
           HUNTER_API_KEY: ${{ secrets.HUNTER_API_KEY }}
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          GOOGLE_CX: ${{ secrets.GOOGLE_CX }}
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
         run: python scripts/enrich.py
 
       - name: Commit & Push
