@@ -13,6 +13,9 @@ import os
 import re
 import time
 import requests
+import unicodedata
+def remove_accents(s):
+    return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
 
 # ── Config ─────────────────────────────────────────────────────────────────
 HUNTER_KEY   = os.getenv("HUNTER_API_KEY", "")
@@ -457,10 +460,10 @@ def run():
 
             if email:
                 print(f"  ✉  {email}")
-                contacts.append({"name": f"{first} {last}", "email": email, "linkedin": url})
+                contacts.append({"name": remove_accents(f"{first} {last}"), "email": email, "linkedin": url})
             else:
                 print(f"  ✗  {first} {last} — pas d'email")
-                contacts.append({"name": f"{first} {last}", "email": "", "linkedin": url})
+                contacts.append({"name": remove_accents(f"{first} {last}"), "email": "", "linkedin": url})
 
             time.sleep(DELAY)
 
