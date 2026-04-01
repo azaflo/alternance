@@ -217,11 +217,45 @@ def find_linkedin_profiles(company: str, city: str | None, dept: str | None) -> 
 # 3. RÉSOLUTION EMAIL VIA HUNTER.IO
 # ══════════════════════════════════════════════════════════════════════════
 
+def _domain_matches_company(domain: str, company: str) -> bool:
+    """
+    Vérifie que le domaine retourné par Hunter correspond bien à l'entreprise.
+    Évite les faux positifs (ex: Hunter renvoie elior.fr pour Carrefour).
+
+    Stratégie : au moins UN mot significatif du nom de l'entreprise
+    doit apparaître dans le domaine (après normalisation).
+    """
+    # Normalisation : minuscules, suppression accents basiques
+    def norm(s: str) -> str:
+        s = s.lower()
+        for a, b in [("é","e"),("è","e"),("ê","e"),("à","a"),("â","a"),("ô","o"),("û","u"),("î","i")]:
+            s = s.replace(a, b)
+        return s
+
+    domain_n  = norm(domain)
+    company_n = norm(company)
+
+    # Mots significatifs de l'entreprise (≥ 4 chars, hors mots génériques)
+    stopwords = {"group", "groupe", "france", "services", "solutions",
+                 "technologies", "federation", "nationale", "internationale"}
+    words = [
+        w for w in re.split(r"[\s\-–_/|]", company_n)
+        if len(w) >= 4 and w not in stopwords
+    ]
+
+    if not words:
+        return True   # pas de mots discriminants → on ne bloque pas
+
+    matched = any(w in domain_n for w in words)
+    if not matched:
+        print(f"     ⚠  Domaine rejeté : '{domain}' ne correspond pas à '{company}'")
+    return matched
+
+
 def _find_domain(company: str) -> str | None:
     """
     Hunter.io /domain-search?company=...
-    Retourne le domaine email de l'entreprise (ex: "credit-agricole.fr").
-    Beaucoup plus fiable que de deviner le domaine.
+    Retourne le domaine email uniquement s'il correspond vraiment à l'entreprise.
     """
     try:
         r = requests.get(
@@ -231,8 +265,11 @@ def _find_domain(company: str) -> str | None:
         )
         domain = r.json().get("data", {}).get("domain")
         if domain:
-            print(f"     🌐 Domaine : {domain}")
-            return domain
+            if _domain_matches_company(domain, company):
+                print(f"     🌐 Domaine : {domain}")
+                return domain
+            # Domaine incohérent → on ne l'utilise pas
+            return None
     except Exception as e:
         print(f"     ✗  Hunter domain-search : {e}")
     return None
@@ -294,54 +331,74 @@ def name_from_linkedin_url(url: str) -> tuple[str | None, str | None]:
 # 4. INJECTION DANS INDEX.HTML
 # ══════════════════════════════════════════════════════════════════════════
 
+def _replace_or_insert_field(html: str, id_pos: int, field_name: str, field_value: str) -> str:
+    """
+    Dans la zone de l offre (à partir de id_pos) :
+    - Remplace le champ s il existe déjà
+    - Sinon l insère avant logo:
+    """
+    zone = html[id_pos: id_pos + 900]
+    existing = re.search(rf"{field_name}:\s*['\"]?[^,\n]*['\"]?,?", zone)
+    if existing:
+        abs_s = id_pos + existing.start()
+        abs_e = id_pos + existing.end()
+        return html[:abs_s] + f"{field_name}: {field_value}," + html[abs_e:]
+    logo_m = re.search(r"\n(\s*)logo:", zone)
+    if logo_m:
+        insert_at = id_pos + logo_m.start()
+        indent    = logo_m.group(1)
+        return html[:insert_at] + f"\n{indent}{field_name}: {field_value}," + html[insert_at:]
+    print(f"  ⚠  Impossible d inserer '{field_name}' pour cette offre")
+    return html
+
+
 def inject_contacts(html: str, offer_id: str, contacts: list[dict]) -> str:
     """
-    Ajoute ou remplace le champ hrContacts dans le bloc JS de l'offre.
+    - 1er contact  →  hrEmail  (email principal, affiché en badge vert)
+    - Contacts suivants  →  hrContacts  (contacts supplémentaires)
 
-    Structure cible dans index.html :
-        id: 'ca-soc',
-        ...
-        hrContacts: [{name: "Jean Dupont", email: "j.dupont@ca.fr"}, ...],
+    Structure injectée :
+        hrEmail: "jean.dupont@company.fr",
+        hrContacts: [{name: "Marie Martin", email: "m.martin@company.fr"}],
         logo: "🏦",
-        coverLetter: `...`
-
-    Repère stable utilisé pour l'insertion : la ligne "logo:" qui est
-    présente dans chaque offre sans exception.
     """
     if not contacts:
         return html
 
-    items_js = ", ".join(
-        f'{{name: "{c["name"]}", email: "{c["email"]}"}}'
-        for c in contacts
-    )
-    new_field = f"hrContacts: [{items_js}]"
-
-    # Localise l'id de l'offre
     m = re.search(rf"id:\s*['\"]({re.escape(offer_id)})['\"]", html)
     if not m:
         print(f"  ⚠  id '{offer_id}' introuvable, injection ignorée")
         return html
 
     id_pos = m.start()
-    zone   = html[id_pos: id_pos + 900]   # zone de travail
 
-    # Cas 1 : hrContacts existe déjà → remplacement en place
-    existing = re.search(r"hrContacts:\s*\[.*?\]", zone, re.DOTALL)
-    if existing:
-        abs_s = id_pos + existing.start()
-        abs_e = id_pos + existing.end()
-        return html[:abs_s] + new_field + html[abs_e:]
+    # hrEmail ← 1er contact
+    first_email = contacts[0]["email"]
+    html = _replace_or_insert_field(html, id_pos, "hrEmail", f'"{first_email}"')
 
-    # Cas 2 : pas encore de hrContacts → insertion avant "logo:"
-    logo_m = re.search(r"\n(\s*)logo:", zone)
-    if logo_m:
-        insert_at = id_pos + logo_m.start()
-        indent    = logo_m.group(1)
-        return html[:insert_at] + f"\n{indent}{new_field}," + html[insert_at:]
-
-    print(f"  ⚠  Repère 'logo:' introuvable pour '{offer_id}', injection ignorée")
+    # hrContacts ← contacts suivants
+    if len(contacts) > 1:
+        m2 = re.search(rf"id:\s*['\"]({re.escape(offer_id)})['\"]", html)
+        if m2:
+            id_pos = m2.start()
+            items_js = ", ".join(
+                f'{{name: "{c["name"]}", email: "{c["email"]}"}}' for c in contacts[1:]
+            )
+            new_hrc = f'hrContacts: [{items_js}]'
+            zone = html[id_pos: id_pos + 950]
+            existing_hrc = re.search(r"hrContacts:\s*\[.*?\]", zone, re.DOTALL)
+            if existing_hrc:
+                abs_s = id_pos + existing_hrc.start()
+                abs_e = id_pos + existing_hrc.end()
+                html  = html[:abs_s] + new_hrc + html[abs_e:]
+            else:
+                logo_m = re.search(r"\n(\s*)logo:", zone)
+                if logo_m:
+                    insert_at = id_pos + logo_m.start()
+                    indent    = logo_m.group(1)
+                    html = html[:insert_at] + f"\n{indent}{new_hrc}," + html[insert_at:]
     return html
+
 
 
 # ══════════════════════════════════════════════════════════════════════════
