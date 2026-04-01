@@ -995,7 +995,12 @@
           <div class="company">${escHtml(o.company)} · ${escHtml(o.location || '')}</div>
           <div class="offer-tags">
             ${(o.tags || []).map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}
-            ${o.hrEmail ? `<span class="tag" style="color:#86efac;border-color:#22c55e44">✉ ${escHtml(o.hrEmail)}</span>` : '<span class="tag" style="color:#f87171;border-color:#ef444444">✉ email non public</span>'}
+            ${o.hrEmail
+  ? `<span class="tag" style="color:#86efac;border-color:#22c55e44">✉ ${escHtml(o.hrEmail)}</span>`
+  : '<span class="tag" style="color:#f87171;border-color:#ef444444">✉ email non public</span>'}
+${(o.hrContacts || []).map(c => `
+  <span class="tag" style="color:#a78bfa;border-color:#7c3aed44" title="${escHtml(c.name)}">✉ ${escHtml(c.email)}</span>
+`).join('')}
           </div>
         </div>
         <div class="offer-actions">
