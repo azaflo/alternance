@@ -452,12 +452,15 @@ def run():
             print(f"  👤 {first} {last}...")
             email = resolve_email(first, last, comp)
 
+            print(f"  👤 {first} {last}...")
+            email = resolve_email(first, last, comp)
+
             if email:
-    print(f"  ✉  {email}")
-    contacts.append({"name": f"{first} {last}", "email": email, "linkedin": url})
-else:
-    print(f"  ✗  {first} {last} — pas d'email")
-    contacts.append({"name": f"{first} {last}", "email": "", "linkedin": url})
+                print(f"  ✉  {email}")
+                contacts.append({"name": f"{first} {last}", "email": email, "linkedin": url})
+            else:
+                print(f"  ✗  {first} {last} — pas d'email")
+                contacts.append({"name": f"{first} {last}", "email": "", "linkedin": url})
 
             time.sleep(DELAY)
 
