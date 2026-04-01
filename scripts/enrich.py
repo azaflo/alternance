@@ -1,53 +1,34 @@
 import os, requests, re, time
 import urllib.parse
-from googlesearch import search
+from duckduckgo_search import DDGS # <-- NOUVEL IMPORT
 
-# --- CONFIGURATION ---
-API_KEY = os.getenv("HUNTER_API_KEY")
-FILE_PATH = "index.html"
-
-# --- 1. FONCTIONS DE NETTOYAGE ET D'EXTRACTION ---
+# ... (API_KEY et FILE_PATH ne changent pas)
 
 def clean_company_name(name):
     """ Nettoie le nom de l'entreprise pour optimiser les recherches """
     name = name.lower()
-    name = re.split(r'[-/(/|]', name)[0] # Enlève ce qui est après un tiret
+    # ⚠️ CORRECTION : On ajoute le tiret long (–) et le tiret cadratin (—) dans la Regex
+    name = re.split(r'[-–—/(/|]', name)[0] 
     junk = ['france', 'groupe', 'group', 'sas', 'sa', 'sarl', 'europe', 'services', 'solutions', 'technologies']
     for word in junk:
         name = re.sub(rf'\b{word}\b', '', name)
     return re.sub(r'\s+', ' ', name).strip()
 
-def extract_name_from_linkedin_url(url):
-    """ Extrait le prénom et le nom à partir du slug de l'URL LinkedIn """
-    # Exemple : linkedin.com/in/jean-claude-dupond-12345ab/
-    match = re.search(r'linkedin\.com/in/([^/]+)', url)
-    if not match: 
-        return None, None
-    
-    slug = match.group(1)
-    # On supprime l'identifiant alphanumérique souvent présent à la fin des URL LinkedIn
-    slug = re.sub(r'-[0-9a-zA-Z]{5,}$', '', slug) 
-    parts = slug.split('-')
-    
-    if len(parts) >= 2:
-        first_name = parts[0]
-        last_name = " ".join(parts[1:]) # Le reste devient le nom de famille
-        return first_name, last_name
-    return None, None
+# ... (extract_name_from_linkedin_url ne change pas)
 
-# --- 2. FONCTIONS DE RECHERCHE ---
-
-def google_dork_linkedin(company_name):
-    """ Fait une recherche Google ciblée pour trouver le profil LinkedIn du RH/IT """
+def osint_dork_linkedin(company_name):
+    """ Fait une recherche DuckDuckGo ciblée (Contourne le blocage IP Google) """
     query = f'site:linkedin.com/in/ ("responsable RH" OR "recrutement" OR "IT Manager" OR "DSI") "{company_name}"'
-    print(f"   🔎 OSINT (Google Dork) : Recherche profil pour {company_name}...")
+    print(f"   🔎 OSINT (DuckDuckGo) : Recherche profil pour {company_name}...")
     
     try:
-        # On récupère le 1er résultat Google
-        for url in search(query, num_results=1, lang="fr"):
-            return url
+        # Utilisation de DuckDuckGo au lieu de Google
+        with DDGS() as ddgs:
+            results = list(ddgs.text(query, max_results=1, region='fr-fr'))
+            if results and len(results) > 0:
+                return results[0].get('href')
     except Exception as e:
-        print(f"   ⚠️ Erreur Google Dork : {e}")
+        print(f"   ⚠️ Erreur DDG : {e}")
     return None
 
 def get_direct_email_finder(company_name, first_name, last_name):
