@@ -18,7 +18,7 @@ def clean_company_name(name):
 
 def osint_dork_linkedin(company_name):
     """ Fait une recherche DuckDuckGo ciblée (Contourne le blocage IP Google) """
-    query = f'site:linkedin.com/in/ ("responsable RH" OR "recrutement" OR "IT Manager" OR "DSI") "{company_name}"'
+    query = f'site:linkedin.com/in/ "recrutement" "{company_name}"'
     print(f"   🔎 OSINT (DuckDuckGo) : Recherche profil pour {company_name}...")
     
     try:
