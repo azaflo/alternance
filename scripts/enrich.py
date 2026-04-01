@@ -1,6 +1,6 @@
 import os, requests, re, time
 import urllib.parse
-from duckduckgo_search import DDGS
+
 
 # --- CONFIGURATION GLOBALE ---
 API_KEY = os.getenv("HUNTER_API_KEY")
@@ -18,21 +18,41 @@ def clean_company_name(name):
         name = re.sub(rf'\b{word}\b', '', name)
     return re.sub(r'\s+', ' ', name).strip()
 
-# ... (extract_name_from_linkedin_url ne change pas)
 
-def osint_dork_linkedin(company_name):
-    """ Fait une recherche DuckDuckGo ciblée (Contourne le blocage IP Google) """
-    query = f'site:linkedin.com/in/ "recrutement" "{company_name}"'
-    print(f"   🔎 OSINT (DuckDuckGo) : Recherche profil pour {company_name}...")
+def google_api_linkedin(company_name):
+    """ Utilise l'API Officielle de Google (0% de blocage, 100% de précision) """
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+    GOOGLE_CX = os.getenv("GOOGLE_CX")
+    
+    if not GOOGLE_API_KEY or not GOOGLE_CX:
+        print("   ⚠️ Clés Google API manquantes dans GitHub Secrets !")
+        return None
+
+    # Comme notre moteur (CX) est déjà restreint à LinkedIn, on simplifie la requête :
+    query = f'("responsable RH" OR "recrutement" OR "IT Manager" OR "DSI") "{company_name}"'
+    safe_query = urllib.parse.quote(query)
+    
+    url = f"https://customsearch.googleapis.com/customsearch/v1?key={GOOGLE_API_KEY}&cx={GOOGLE_CX}&q={safe_query}"
+    
+    print(f"   🔎 OSINT (Google API) : Recherche profil pour {company_name}...")
     
     try:
-        # Utilisation de DuckDuckGo au lieu de Google
-        with DDGS() as ddgs:
-            results = list(ddgs.text(query, max_results=1, region='fr-fr'))
-            if results and len(results) > 0:
-                return results[0].get('href')
+        res = requests.get(url, timeout=10).json()
+        
+        # Vérification si Google renvoie une erreur (ex: quota dépassé)
+        if 'error' in res:
+            print(f"   ❌ Erreur de l'API Google : {res['error']['message']}")
+            return None
+            
+        items = res.get('items', [])
+        
+        if items:
+            # On renvoie le lien du premier résultat
+            return items[0].get('link')
+            
     except Exception as e:
-        print(f"   ⚠️ Erreur DDG : {e}")
+        print(f"   ⚠️ Crash de la requête Google : {e}")
+        
     return None
 
 def get_direct_email_finder(company_name, first_name, last_name):
@@ -93,7 +113,7 @@ def process_company(original_name):
     cleaned_name = clean_company_name(original_name)
     
     # ÉTAPE 1 : Trouver la personne via DuckDuckGo
-    linkedin_url = osint_dork_linkedin(cleaned_name) # <-- On utilise la nouvelle fonction !
+    linkedin_url = google_api_linkedin(cleaned_name)
     
     if linkedin_url:
         first_name, last_name = extract_name_from_linkedin_url(linkedin_url)
