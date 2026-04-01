@@ -1001,6 +1001,15 @@
 ${(o.hrContacts || []).map(c => `
   <span class="tag" style="color:#a78bfa;border-color:#7c3aed44" title="${escHtml(c.name)}">✉ ${escHtml(c.email)}</span>
 `).join('')}
+${(o.hrContacts || []).filter(c => !c.email).length > 0 ? `
+  <div style="margin-top:8px;font-size:12px;color:var(--text-muted)">
+    <span style="color:#94a3b8">👤 Contacts identifiés :</span>
+    ${(o.hrContacts || []).filter(c => !c.email).map(c => `
+      <a href="${escHtml(c.linkedin)}" target="_blank" 
+         style="color:#7b9dff;margin-left:6px">${escHtml(c.name)}</a>
+    `).join('')}
+  </div>
+` : ''}
           </div>
         </div>
         <div class="offer-actions">
