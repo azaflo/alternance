@@ -24,7 +24,7 @@ def search_linkedin_serpapi(company_name):
 
     params = {
         "engine": "google",
-        "q": f'site:linkedin.com/in/ ("responsable RH" OR "recrutement" OR "IT Manager" OR "DSI") "{company_name}"',
+        "q": f'site:linkedin.com/in/ ("responsable RH" OR "recrutement" OR "IT Manager" OR "DSI") "Ile-de-France" "{company_name}"',
         "api_key": SERPAPI_KEY,
         "num": 1, # On prend le 1er résultat
         "gl": "fr",
@@ -80,7 +80,7 @@ def run_pipeline():
 
     # 2. Identification des cibles (Cherche les lignes avec "En attente")
     # Format attendu dans ton HTML : <td>Sonepar</td><td>En attente</td>
-    pattern = r'<td>(.*?)</td><td>En attente</td>'
+    pattern = r'<td>(.*?)</td>\s*<td>\s*[Ee]n attente\s*</td>'
     companies = re.findall(pattern, content)
     
     if not companies:
