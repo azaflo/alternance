@@ -382,7 +382,7 @@ def inject_contacts(html: str, offer_id: str, contacts: list[dict]) -> str:
         if m2:
             id_pos = m2.start()
             items_js = ", ".join(
-                f'{{name: "{c["name"]}", email: "{c["email"]}"}}' for c in contacts[1:]
+                f'{{name: "{c["name"]}", email: "{c["email"]}", linkedin: "{c.get("linkedin", "")}"}}'  for c in contacts[1:]
             )
             new_hrc = f'hrContacts: [{items_js}]'
             zone = html[id_pos: id_pos + 950]
