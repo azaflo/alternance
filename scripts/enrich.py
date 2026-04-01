@@ -28,18 +28,29 @@ def google_api_linkedin(company_name):
         print("   ⚠️ Clés Google API manquantes dans GitHub Secrets !")
         return None
 
-    # Comme notre moteur (CX) est déjà restreint à LinkedIn, on simplifie la requête :
+    # Sécurité : On retire les espaces invisibles liés aux copier-coller
+    GOOGLE_API_KEY = GOOGLE_API_KEY.strip()
+    GOOGLE_CX = GOOGLE_CX.strip()
+
+    # La recherche cible
     query = f'("responsable RH" OR "recrutement" OR "IT Manager" OR "DSI") "{company_name}"'
-    safe_query = urllib.parse.quote(query)
     
-    url = f"https://customsearch.googleapis.com/customsearch/v1?key={GOOGLE_API_KEY}&cx={GOOGLE_CX}&q={safe_query}"
+    # On confie les paramètres à "requests", c'est beaucoup plus robuste
+    params = {
+        "key": GOOGLE_API_KEY,
+        "cx": GOOGLE_CX,
+        "q": query
+    }
+    
+    url = "https://customsearch.googleapis.com/customsearch/v1"
     
     print(f"   🔎 OSINT (Google API) : Recherche profil pour {company_name}...")
     
     try:
-        res = requests.get(url, timeout=10).json()
+        # requests se charge de construire l'URL parfaite avec les ? et les &
+        res = requests.get(url, params=params, timeout=10).json()
         
-        # Vérification si Google renvoie une erreur (ex: quota dépassé)
+        # Vérification si Google renvoie une erreur
         if 'error' in res:
             print(f"   ❌ Erreur de l'API Google : {res['error']['message']}")
             return None
@@ -47,14 +58,12 @@ def google_api_linkedin(company_name):
         items = res.get('items', [])
         
         if items:
-            # On renvoie le lien du premier résultat
             return items[0].get('link')
             
     except Exception as e:
         print(f"   ⚠️ Crash de la requête Google : {e}")
         
     return None
-
 def get_direct_email_finder(company_name, first_name, last_name):
     """ Utilise l'API Email Finder pour trouver l'email exact de la personne """
     safe_company = urllib.parse.quote(company_name)
