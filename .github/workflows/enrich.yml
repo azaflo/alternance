@@ -19,7 +19,7 @@ jobs:
           python-version: '3.9'
 
       - name: Install dependencies
-        run: pip install requests googlesearch-python
+        run: pip install requests duckduckgo-search
 
       - name: Run Enrichment
         env:
