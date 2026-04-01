@@ -1,8 +1,12 @@
 import os, requests, re, time
 import urllib.parse
-from duckduckgo_search import DDGS # <-- NOUVEL IMPORT
+from duckduckgo_search import DDGS
 
-# ... (API_KEY et FILE_PATH ne changent pas)
+# --- CONFIGURATION GLOBALE ---
+API_KEY = os.getenv("HUNTER_API_KEY")
+FILE_PATH = "index.html" 
+
+# ... (Ici commence ta fonction clean_company_name) ...
 
 def clean_company_name(name):
     """ Nettoie le nom de l'entreprise pour optimiser les recherches """
