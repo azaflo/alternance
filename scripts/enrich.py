@@ -1,128 +1,425 @@
-import os, requests, re, time
+"""
+Radar-Alternance — Pipeline d'enrichissement des contacts recruteurs
+====================================================================
+Pour chaque offre dans window.injectOffers('indeed', [...]) :
+  1. Cherche le(s) responsable(s) LinkedIn via SerpApi (ville + service)
+  2. Trouve leur email pro via Hunter.io (domain-search puis email-finder)
+  3. Injecte les contacts dans index.html (champ hrContacts)
 
-# --- CONFIGURATION DES CLÉS (RÉCUPÉRÉES DE GITHUB SECRETS) ---
-HUNTER_API_KEY = os.getenv("HUNTER_API_KEY")
-SERPAPI_KEY = os.getenv("SERPAPI_KEY")
-FILE_PATH = "index.html"
+Secrets GitHub requis : HUNTER_API_KEY, SERPAPI_KEY
+"""
 
-def clean_company_name(name):
-    """ Nettoie le nom de l'entreprise pour optimiser la recherche Google """
-    name = name.lower()
-    # Supprime tout ce qui est après un tiret ou une parenthèse (ex: Sonepar - France -> Sonepar)
-    name = re.split(r'[-–—/(/|]', name)[0] 
-    # Supprime les termes juridiques inutiles
-    junk = ['france', 'groupe', 'group', 'sas', 'sa', 'sarl', 'europe', 'services', 'solutions']
-    for word in junk:
-        name = re.sub(rf'\b{word}\b', '', name)
-    return re.sub(r'\s+', ' ', name).strip()
+import os
+import re
+import time
+import requests
 
-def search_linkedin_serpapi(company_name):
-    """ Trouve un profil LinkedIn stratégique via SerpApi """
-    if not SERPAPI_KEY:
-        print("   ⚠️ Erreur : SERPAPI_KEY non configurée.")
-        return None
+# ── Config ─────────────────────────────────────────────────────────────────
+HUNTER_KEY   = os.getenv("HUNTER_API_KEY", "")
+SERPAPI_KEY  = os.getenv("SERPAPI_KEY", "")
+HTML_FILE    = "index.html"
+MAX_CONTACTS = 3      # profils LinkedIn max par offre
+DELAY        = 0.8    # secondes entre appels API
 
-    params = {
-        "engine": "google",
-        "q": f'site:linkedin.com/in/ ("responsable RH" OR "recrutement" OR "IT Manager" OR "DSI") "Ile-de-France" "{company_name}"',
-        "api_key": SERPAPI_KEY,
-        "num": 1, # On prend le 1er résultat
-        "gl": "fr",
-        "hl": "fr"
-    }
 
-    try:
-        response = requests.get("https://serpapi.com/search", params=params, timeout=15)
-        data = response.json()
-        results = data.get("organic_results", [])
-        if results and "linkedin.com/in/" in results[0].get("link", ""):
-            return results[0].get("link")
-    except Exception as e:
-        print(f"   ⚠️ Erreur SerpApi : {e}")
+# ══════════════════════════════════════════════════════════════════════════
+# 1. LECTURE + PARSING DES OFFRES
+# ══════════════════════════════════════════════════════════════════════════
+
+DEPT_KEYWORDS = {
+    "soc":            "analyste SOC",
+    "cyber":          "responsable cybersécurité",
+    "sécurité":       "responsable sécurité SI",
+    "réseau":         "responsable réseaux",
+    "infrastructure": "responsable infrastructure",
+    "support":        "responsable support IT",
+    "système":        "responsable systèmes",
+    "cloud":          "architecte cloud",
+    "dsi":            "DSI",
+    "sûreté":         "responsable sûreté",
+    "logiciel":       "responsable développement",
+}
+
+
+def _detect_department(title: str) -> str | None:
+    t = title.lower()
+    for kw, label in DEPT_KEYWORDS.items():
+        if kw in t:
+            return label
     return None
 
-def extract_name_from_linkedin_url(url):
-    """ Extrait Prénom et Nom depuis l'URL LinkedIn """
+
+def parse_offers(html: str) -> list[dict]:
+    """
+    Extrait toutes les offres du bloc window.injectOffers('indeed', [...]).
+    Robuste aux template literals backtick (coverLetter multi-lignes).
+    """
+    marker = "window.injectOffers('indeed',"
+    start = html.find(marker)
+    if start == -1:
+        start = html.find('window.injectOffers("indeed",')
+    if start == -1:
+        return []
+
+    # Tous les ids dans l'ordre d'apparition
+    ids = re.findall(r"id:\s*['\"]([^'\"]+)['\"]", html[start:])
+
+    offers = []
+    for oid in ids:
+        pos = html.find(f"id: '{oid}'", start)
+        if pos == -1:
+            pos = html.find(f'id: "{oid}"', start)
+        if pos == -1:
+            continue
+
+        # Fenêtre de 800 chars : couvre tous les champs sauf coverLetter
+        window = html[pos: pos + 800]
+
+        def field(key: str) -> str | None:
+            m = re.search(rf'{key}:\s*["\']([^"\']+)["\']', window)
+            return m.group(1).strip() if m else None
+
+        company  = field("company")
+        title    = field("title")
+        location = field("location")
+
+        if not company:
+            continue
+
+        # Ville depuis location  →  "Brunoy (91) · ~30 km"  →  "Brunoy"
+        city = None
+        if location:
+            m = re.match(r"^([A-Za-zÀ-ÿ\- ]+)", location)
+            if m:
+                city = m.group(1).strip()
+
+        offers.append({
+            "id":         oid,
+            "company":    company,
+            "title":      title or "",
+            "location":   location or "",
+            "city":       city,
+            "department": _detect_department(title or ""),
+        })
+
+    return offers
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# 2. RECHERCHE LINKEDIN VIA SERPAPI
+# ══════════════════════════════════════════════════════════════════════════
+
+def _clean_company(name: str) -> str:
+    """Normalise un nom d'entreprise pour la requête Google."""
+    name = re.split(r"[-–—/(|]", name)[0]
+    junk = [
+        "france", "groupe", "group", "sas", "sa", "sarl",
+        "europe", "services", "solutions", "technologies",
+    ]
+    for w in junk:
+        name = re.sub(rf"\b{w}\b", "", name, flags=re.IGNORECASE)
+    return re.sub(r"\s+", " ", name).strip()
+
+
+def _build_queries(company: str, city: str | None, dept: str | None) -> list[str]:
+    """
+    Génère jusqu'à 3 requêtes Google du plus précis au plus large.
+    On retire les doublons en conservant l'ordre.
+    """
+    c = _clean_company(company)
+    pool = []
+
+    # Niveau 1 — département + ville + entreprise
+    if dept and city:
+        pool.append(
+            f'site:linkedin.com/in/ "{dept}" "{c}" "{city}"'
+        )
+
+    # Niveau 2 — responsable IT/RH + ville  OU  département seul + IDF
+    if city:
+        pool.append(
+            f'site:linkedin.com/in/ '
+            f'("responsable IT" OR "DSI" OR "manager IT" OR "recrutement") '
+            f'"{c}" "{city}"'
+        )
+    if dept:
+        pool.append(
+            f'site:linkedin.com/in/ "{dept}" "{c}" "Île-de-France"'
+        )
+
+    # Niveau 3 — fallback large
+    pool.append(
+        f'site:linkedin.com/in/ '
+        f'("RH" OR "recrutement" OR "DSI" OR "IT") '
+        f'"{c}" "Île-de-France"'
+    )
+
+    seen, unique = set(), []
+    for q in pool:
+        if q not in seen:
+            seen.add(q)
+            unique.append(q)
+    return unique
+
+
+def find_linkedin_profiles(company: str, city: str | None, dept: str | None) -> list[str]:
+    """
+    Retourne jusqu'à MAX_CONTACTS URLs LinkedIn.
+    Essaie chaque requête en cascade et s'arrête au premier succès.
+    """
+    if not SERPAPI_KEY:
+        print("  ⚠  SERPAPI_KEY manquante")
+        return []
+
+    queries = _build_queries(company, city, dept)
+    labels  = ["précis", "intermédiaire", "large"]
+
+    for i, query in enumerate(queries):
+        label = labels[i] if i < len(labels) else "large"
+        print(f"  🔍 [{label}] {query[:85]}...")
+
+        params = {
+            "engine":  "google",
+            "q":       query,
+            "api_key": SERPAPI_KEY,
+            "num":     MAX_CONTACTS + 2,
+            "gl":      "fr",
+            "hl":      "fr",
+        }
+
+        try:
+            r = requests.get("https://serpapi.com/search", params=params, timeout=15)
+            r.raise_for_status()
+            results = r.json().get("organic_results", [])
+
+            profiles = []
+            seen = set()
+            for res in results:
+                url = res.get("link", "")
+                if "linkedin.com/in/" in url and url not in seen:
+                    seen.add(url)
+                    profiles.append(url)
+
+            if profiles:
+                print(f"  ✔  {len(profiles)} profil(s) trouvé(s)")
+                return profiles[:MAX_CONTACTS]
+
+        except Exception as e:
+            print(f"  ✗  SerpApi : {e}")
+
+        time.sleep(DELAY)
+
+    print("  ✗  Aucun profil LinkedIn trouvé")
+    return []
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# 3. RÉSOLUTION EMAIL VIA HUNTER.IO
+# ══════════════════════════════════════════════════════════════════════════
+
+def _find_domain(company: str) -> str | None:
+    """
+    Hunter.io /domain-search?company=...
+    Retourne le domaine email de l'entreprise (ex: "credit-agricole.fr").
+    Beaucoup plus fiable que de deviner le domaine.
+    """
     try:
-        # On récupère la fin de l'URL
-        slug = url.split('/in/')[-1].strip('/')
-        # On enlève les chiffres de sécurité à la fin si présents
-        slug = re.sub(r'-[a-z0-9]+$', '', slug)
-        parts = slug.split('-')
+        r = requests.get(
+            "https://api.hunter.io/v2/domain-search",
+            params={"company": company, "api_key": HUNTER_KEY},
+            timeout=10,
+        )
+        domain = r.json().get("data", {}).get("domain")
+        if domain:
+            print(f"     🌐 Domaine : {domain}")
+            return domain
+    except Exception as e:
+        print(f"     ✗  Hunter domain-search : {e}")
+    return None
+
+
+def _find_email(first: str, last: str, domain: str) -> str | None:
+    """
+    Hunter.io /email-finder — ne retourne l'email que si score >= 50.
+    """
+    try:
+        r = requests.get(
+            "https://api.hunter.io/v2/email-finder",
+            params={
+                "domain":     domain,
+                "first_name": first,
+                "last_name":  last,
+                "api_key":    HUNTER_KEY,
+            },
+            timeout=10,
+        )
+        data  = r.json().get("data", {})
+        email = data.get("email")
+        score = data.get("score", 0)
+        if email and score >= 50:
+            return email
+    except Exception as e:
+        print(f"     ✗  Hunter email-finder : {e}")
+    return None
+
+
+def resolve_email(first: str, last: str, company: str) -> str | None:
+    """Point d'entrée : domaine → email."""
+    if not HUNTER_KEY:
+        return None
+    domain = _find_domain(company)
+    if not domain:
+        return None
+    return _find_email(first, last, domain)
+
+
+def name_from_linkedin_url(url: str) -> tuple[str | None, str | None]:
+    """
+    /in/jean-dupont-abc123  →  ("Jean", "Dupont")
+    Gère les slugs avec tirets multiples et identifiants de sécurité.
+    """
+    try:
+        slug = url.rstrip("/").split("/in/")[-1]
+        # Retire l'identifiant de sécurité : suite alphanum 4+ chars en fin de slug
+        slug = re.sub(r"-[a-z0-9]{4,}$", "", slug)
+        parts = [p for p in slug.split("-") if p and not p.isdigit()]
         if len(parts) >= 2:
             return parts[0].capitalize(), parts[1].capitalize()
-    except:
+    except Exception:
         pass
     return None, None
 
-def get_hunter_email(first_name, last_name, domain):
-    """ Utilise Hunter.io pour trouver l'email pro """
-    if not HUNTER_API_KEY:
-        return None
-    url = f"https://api.hunter.io/v2/email-finder?domain={domain}&first_name={first_name}&last_name={last_name}&api_key={HUNTER_API_KEY}"
-    try:
-        res = requests.get(url, timeout=10).json()
-        return res.get('data', {}).get('email')
-    except:
-        return None
 
-def run_pipeline():
-    """ Fonction principale qui traite ton fichier index.html """
-    print("🚀 Démarrage du Pipeline SISR (Version SerpApi)...")
-    
-    if not os.path.exists(FILE_PATH):
-        print(f"❌ Erreur : Le fichier {FILE_PATH} est introuvable à la racine.")
+# ══════════════════════════════════════════════════════════════════════════
+# 4. INJECTION DANS INDEX.HTML
+# ══════════════════════════════════════════════════════════════════════════
+
+def inject_contacts(html: str, offer_id: str, contacts: list[dict]) -> str:
+    """
+    Ajoute ou remplace le champ hrContacts dans le bloc JS de l'offre.
+
+    Structure cible dans index.html :
+        id: 'ca-soc',
+        ...
+        hrContacts: [{name: "Jean Dupont", email: "j.dupont@ca.fr"}, ...],
+        logo: "🏦",
+        coverLetter: `...`
+
+    Repère stable utilisé pour l'insertion : la ligne "logo:" qui est
+    présente dans chaque offre sans exception.
+    """
+    if not contacts:
+        return html
+
+    items_js = ", ".join(
+        f'{{name: "{c["name"]}", email: "{c["email"]}"}}'
+        for c in contacts
+    )
+    new_field = f"hrContacts: [{items_js}]"
+
+    # Localise l'id de l'offre
+    m = re.search(rf"id:\s*['\"]({re.escape(offer_id)})['\"]", html)
+    if not m:
+        print(f"  ⚠  id '{offer_id}' introuvable, injection ignorée")
+        return html
+
+    id_pos = m.start()
+    zone   = html[id_pos: id_pos + 900]   # zone de travail
+
+    # Cas 1 : hrContacts existe déjà → remplacement en place
+    existing = re.search(r"hrContacts:\s*\[.*?\]", zone, re.DOTALL)
+    if existing:
+        abs_s = id_pos + existing.start()
+        abs_e = id_pos + existing.end()
+        return html[:abs_s] + new_field + html[abs_e:]
+
+    # Cas 2 : pas encore de hrContacts → insertion avant "logo:"
+    logo_m = re.search(r"\n(\s*)logo:", zone)
+    if logo_m:
+        insert_at = id_pos + logo_m.start()
+        indent    = logo_m.group(1)
+        return html[:insert_at] + f"\n{indent}{new_field}," + html[insert_at:]
+
+    print(f"  ⚠  Repère 'logo:' introuvable pour '{offer_id}', injection ignorée")
+    return html
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# 5. PIPELINE PRINCIPAL
+# ══════════════════════════════════════════════════════════════════════════
+
+def run():
+    SEP = "─" * 58
+    print(SEP)
+    print("  Radar-Alternance · Pipeline contacts recruteurs")
+    print(SEP)
+
+    if not os.path.exists(HTML_FILE):
+        print(f"✗ Fichier '{HTML_FILE}' introuvable.")
         return
 
-    # 1. Lecture du fichier
-    with open(FILE_PATH, "r", encoding="utf-8") as f:
-        content = f.read()
+    with open(HTML_FILE, "r", encoding="utf-8") as f:
+        html = f.read()
 
-    # 2. Identification des cibles (Cherche les lignes avec "En attente")
-    # Format attendu dans ton HTML : <td>Sonepar</td><td>En attente</td>
-    pattern = r'<td>(.*?)</td>\s*<td>\s*[Ee]n attente\s*</td>'
-    companies = re.findall(pattern, content)
-    
-    if not companies:
-        print("📊 Aucune entreprise avec le statut 'En attente' trouvée.")
+    offers = parse_offers(html)
+    if not offers:
+        print("✗ Aucune offre dans window.injectOffers().")
         return
 
-    print(f"📊 {len(companies)} entreprises à enrichir.")
+    print(f"\n📋 {len(offers)} offre(s) détectée(s)\n")
+    enriched = 0
 
-    for comp in companies:
-        print(f"\n🏢 Traitement de : {comp}")
-        cleaned = clean_company_name(comp)
-        
-        # Étape A : Google via SerpApi
-        url = search_linkedin_serpapi(cleaned)
-        
-        if url:
-            print(f"   🔎 Profil LinkedIn trouvé : {url}")
-            # Étape B : Extraction du Nom
-            fn, ln = extract_name_from_linkedin_url(url)
-            
-            if fn and ln:
-                # Étape C : Deviner le domaine (simplifié)
-                domain = cleaned.replace(" ", "") + ".fr"
-                # Étape D : Hunter.io
-                email = get_hunter_email(fn, ln, domain)
-                
-                if email:
-                    print(f"   ✅ Email trouvé : {email}")
-                    # Mise à jour du contenu HTML
-                    old_line = f"<td>{comp}</td><td>En attente</td>"
-                    new_line = f"<td>{comp}</td><td><a href='mailto:{email}'>{email}</a> ({fn} {ln})</td>"
-                    content = content.replace(old_line, new_line)
-                    continue
-        
-        print(f"   ❌ Échec de l'enrichissement pour {comp}")
+    for offer in offers:
+        oid  = offer["id"]
+        comp = offer["company"]
+        city = offer["city"]
+        dept = offer["department"]
 
-    # 3. Sauvegarde du fichier mis à jour
-    with open(FILE_PATH, "w", encoding="utf-8") as f:
-        f.write(content)
-    
-    print("\n✅ Travail terminé. Le fichier index.html a été mis à jour.")
+        print(f"▶ {comp}  [{oid}]")
+        print(f"  📍 {city or '?'}  |  🗂  {dept or 'service non détecté'}")
 
-# --- DÉMARRAGE DU SCRIPT ---
+        # Étape A — LinkedIn
+        profiles = find_linkedin_profiles(comp, city, dept)
+        if not profiles:
+            print()
+            continue
+
+        # Étape B — Hunter.io pour chaque profil
+        contacts = []
+        for url in profiles:
+            first, last = name_from_linkedin_url(url)
+            if not (first and last):
+                print(f"  ✗  Nom non extractible depuis : {url}")
+                continue
+
+            print(f"  👤 {first} {last}...")
+            email = resolve_email(first, last, comp)
+
+            if email:
+                print(f"  ✉  {email}")
+                contacts.append({"name": f"{first} {last}", "email": email})
+            else:
+                print(f"  ✗  Email non trouvé pour {first} {last}")
+
+            time.sleep(DELAY)
+
+        # Étape C — Injection dans index.html
+        if contacts:
+            html = inject_contacts(html, oid, contacts)
+            print(f"  ✅ {len(contacts)} contact(s) injecté(s)")
+            enriched += 1
+        else:
+            print("  ✗  Aucun email récupérable")
+
+        print()
+
+    with open(HTML_FILE, "w", encoding="utf-8") as f:
+        f.write(html)
+
+    print(SEP)
+    print(f"  ✅ {enriched}/{len(offers)} offre(s) enrichie(s)  —  index.html mis à jour")
+    print(SEP)
+
+
 if __name__ == "__main__":
-    run_pipeline()
+    run()
