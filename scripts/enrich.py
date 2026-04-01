@@ -92,8 +92,8 @@ def get_domain_search_fallback(company_name):
 def process_company(original_name):
     cleaned_name = clean_company_name(original_name)
     
-    # ÉTAPE 1 : Trouver la personne via Google Dorking
-    linkedin_url = google_dork_linkedin(cleaned_name)
+    # ÉTAPE 1 : Trouver la personne via DuckDuckGo
+    linkedin_url = osint_dork_linkedin(cleaned_name) # <-- On utilise la nouvelle fonction !
     
     if linkedin_url:
         first_name, last_name = extract_name_from_linkedin_url(linkedin_url)
