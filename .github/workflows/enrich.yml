@@ -25,6 +25,8 @@ jobs:
         env:
           HUNTER_API_KEY: ${{ secrets.HUNTER_API_KEY }}
           SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+          PYTHONIOENCODING: utf-8
+          PYTHONUTF8: 1
         run: python scripts/enrich.py
 
       - name: Commit & Push
