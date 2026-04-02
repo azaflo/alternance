@@ -676,6 +676,7 @@ function toggleApplied() {
         headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
       });
       if (res.status === 404) { setSyncStatus('ok'); return []; }
+      if (res.status === 304) { setSyncStatus('ok'); return entries; }
       if (!res.ok) { setSyncStatus('error'); return null; }
       const data = await res.json();
       localStorage.setItem(GH_SHA_KEY, data.sha);
