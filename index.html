@@ -687,30 +687,39 @@ function toggleApplied() {
   }
 
   async function saveToGitHub(data) {
-    const token = getToken();
-    if (!token) return;
-    setSyncStatus('syncing');
-    try {
-      const sha     = getSHA();
-      const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-      const body    = { message: `update: candidatures ${new Date().toLocaleDateString('fr-FR')}`, content };
-      if (sha) body.sha = sha;
-      const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `token ${token}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      });
-      if (res.ok) {
-        const json = await res.json();
-        localStorage.setItem(GH_SHA_KEY, json.content.sha);
-        setSyncStatus('ok');
-      } else { setSyncStatus('error'); }
-    } catch { setSyncStatus('error'); }
-  }
+  const token = getToken();
+  if (!token) return;
+  setSyncStatus('syncing');
+  try {
+    // Toujours récupérer le SHA frais depuis GitHub
+    const getRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Cache-Control': 'no-cache' }
+    });
+    let sha = '';
+    if (getRes.ok) {
+      const existing = await getRes.json();
+      sha = existing.sha;
+      localStorage.setItem(GH_SHA_KEY, sha);
+    }
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+    const body = { message: `update: candidatures ${new Date().toLocaleDateString('fr-FR')}`, content };
+    if (sha) body.sha = sha;
+    const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (res.ok) {
+      const json = await res.json();
+      localStorage.setItem(GH_SHA_KEY, json.content.sha);
+      setSyncStatus('ok');
+    } else { setSyncStatus('error'); }
+  } catch { setSyncStatus('error'); }
+}
 
   // ── Data (localStorage cache + GitHub sync) ───────────────────────────────
   function loadLocal() {
