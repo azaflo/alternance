@@ -497,6 +497,25 @@
         <div class="tab" onclick="switchTab('linkedin', this)">LinkedIn</div>
       </div>
 
+      <!-- Candidatures envoyées -->
+      <div class="section-card">
+        <div class="offers-toggle" onclick="toggleApplied()">
+          <h2>
+            <span>✅</span> Candidatures envoyées
+            <span class="badge" id="applied-badge" style="background:#22c55e22;color:#4ade80;border:1px solid #22c55e44;">0</span>
+          </h2>
+          <span class="chevron" id="chevron-applied">▼</span>
+        </div>
+        <div class="offers-body" id="applied-body">
+          <div class="tab-content active" id="applied-offers">
+            <div class="empty-state" id="applied-empty">
+              <div class="icon">📭</div>
+              <p>Aucune candidature envoyée depuis les offres.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Indeed tab -->
       <div class="tab-content active" id="tab-indeed">
         <div class="coming-soon">
@@ -613,9 +632,26 @@
     appliedOfferIds.add(id);
     localStorage.setItem('applied_offers', JSON.stringify([...appliedOfferIds]));
     const card = document.getElementById('offer-card-' + id);
-    if (card) card.remove();
-  }
-  const getSHA   = () => localStorage.getItem(GH_SHA_KEY)   || '';
+    if (card) {
+        card.remove();
+        const container = document.getElementById('applied-offers');
+        const empty = document.getElementById('applied-empty');
+        if (empty) empty.style.display = 'none';
+        card.id = 'applied-card-' + id;
+        card.style.opacity = '0.75';
+        container.appendChild(card);
+        // Met à jour le badge compteur
+        const badge = document.getElementById('applied-badge');
+        badge.textContent = document.querySelectorAll('[id^="applied-card-"]').length;
+    }
+}
+
+function toggleApplied() {
+    const body    = document.getElementById('applied-body');
+    const chevron = document.getElementById('chevron-applied');
+    body.classList.toggle('open');
+    chevron.classList.toggle('open');
+}
 
   function setSyncStatus(status) {
     const el = document.getElementById('sync-status');
