@@ -94,8 +94,9 @@ def parse_offers(html: str) -> list[dict]:
         company  = field("company")
         title    = field("title")
         location = field("location")
-        url      = field("url",      window_large)
-        career_url = field("careerUrl", window_large)
+        url           = field("url",          window_large)
+        career_url    = field("careerUrl",    window_large)
+        recruiter_name = field("recruiterName", window_large)
 
         if not company:
             continue
@@ -108,14 +109,15 @@ def parse_offers(html: str) -> list[dict]:
                 city = m.group(1).strip()
 
         offers.append({
-            "id":         oid,
-            "company":    company,
-            "title":      title or "",
-            "location":   location or "",
-            "city":       city,
-            "department": _detect_department(title or ""),
-            "url":        url,
-            "career_url": career_url,
+            "id":            oid,
+            "company":       company,
+            "title":         title or "",
+            "location":      location or "",
+            "city":          city,
+            "department":    _detect_department(title or ""),
+            "url":           url,
+            "career_url":    career_url,
+            "recruiter_name": recruiter_name,  # renseigné manuellement dans l'offre
         })
 
     return offers
@@ -125,13 +127,16 @@ def parse_offers(html: str) -> list[dict]:
 # 2. EXTRACTION DU RECRUTEUR DEPUIS LA PAGE DE L'OFFRE
 # ══════════════════════════════════════════════════════════════════════════
 
+# Capture les prénoms/noms composés : "Marie-Claire", "Le Guerneve", "De La Tour", etc.
+_NAME = r"[A-ZÀ-Ÿ][a-zà-ÿ\-]+(?:\s+[A-ZÀ-Ÿa-zà-ÿ][a-zà-ÿ\-]+){1,3}"
+
 RECRUITER_PATTERNS = [
-    r"Postulez auprès de\s*[:\-]?\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)",
-    r"Contact\s*[:\-]\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)",
-    r"Responsable\s+(?:RH|recrutement|du recrutement)\s*[:\-]?\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)",
-    r"Recruteur\s*[:\-]\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)",
-    r"Publié par\s*[:\-]?\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)",
-    r'"hiringOrganization".*?"name"\s*:\s*"([^"]+)"',  # JSON-LD fallback
+    rf"Postulez auprès de\s*[:\-]?\s*({_NAME})",
+    rf"Contact\s*[:\-]\s*({_NAME})",
+    rf"Responsable\s+(?:RH|recrutement|du recrutement)\s*[:\-]?\s*({_NAME})",
+    rf"Recruteur\s*[:\-]\s*({_NAME})",
+    rf"Publié par\s*[:\-]?\s*({_NAME})",
+    rf"Hiring Manager\s*[:\-]\s*({_NAME})",
 ]
 
 _FETCH_HEADERS = {
@@ -565,12 +570,19 @@ def run():
         print(f"▶ {comp}  [{oid}]")
         print(f"  📍 {city or '?'}  |  🗂  {dept or 'service non détecté'}")
 
-        # Étape A — Extraction du nom du recruteur depuis la page de l'offre
-        rec_first, rec_last = fetch_recruiter_name(offer.get("url"))
-        if rec_first and rec_last:
-            print(f"  👤 Recruteur détecté : {rec_first} {rec_last}")
+        # Étape A — Nom du recruteur : champ manuel > scraping de la page
+        manual_name = offer.get("recruiter_name")
+        if manual_name:
+            parts = manual_name.strip().split(" ", 1)
+            rec_first = parts[0]
+            rec_last  = parts[1] if len(parts) > 1 else ""
+            print(f"  👤 Recruteur (manuel) : {rec_first} {rec_last}")
         else:
-            print("  👤 Recruteur non détecté, recherche générique")
+            rec_first, rec_last = fetch_recruiter_name(offer.get("url"))
+            if rec_first and rec_last:
+                print(f"  👤 Recruteur détecté : {rec_first} {rec_last}")
+            else:
+                print("  👤 Recruteur non détecté, recherche générique")
 
         # Étape B — LinkedIn
         profiles = find_linkedin_profiles(comp, city, dept, rec_first, rec_last)
