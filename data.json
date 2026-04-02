@@ -1,5 +1,31 @@
 [
   {
+    "id": "mnhotknui5lt34wonpq",
+    "company": "Covivio",
+    "position": "Alternance – Technicien(ne) Systèmes et Réseaux H/F",
+    "date": "2026-04-02",
+    "source": "Indeed",
+    "status": "envoye",
+    "link": "https://to.indeed.com/aavglql8tn8k",
+    "notes": "",
+    "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je recherche un contrat d'apprentissage pour préparer ma Licence Générale Informatique spécialité Cybersécurité. Votre offre d'alternance de 2 ans pour le poste de Technicien(ne) Systèmes et Réseaux au sein de la DSI de Covivio, à deux pas de Saint-Lazare, a retenu toute mon attention.\n\nÉvoluer dans un groupe immobilier européen coté — assurer le maintien en condition opérationnelle des postes et équipements réseau, administrer les environnements Windows et les outils Microsoft 365, gérer les accès via Active Directory et Intune, et apporter un support de proximité aux collaborateurs — représente l'opportunité idéale pour consolider mes compétences terrain dans un environnement DSI structuré.\n\nMa formation m'a permis de développer des bases solides en administration des systèmes Windows (10/11, Server), en configuration des équipements réseau (commutation, VLAN, Wi-Fi), en gestion des comptes Active Directory et en utilisation des outils Microsoft 365. Je suis rigoureux, autonome et habitué à documenter mes interventions. La durée de 2 ans me permettra de m'investir pleinement et de contribuer à des projets de fond au sein de votre équipe.\n\nJe me tiens disponible pour un entretien à votre convenance.\n\nVeuillez agréer, Madame, Monsieur, l'expression de mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
+    "hrContacts": [
+      {
+        "name": "Nissia Graine",
+        "email": "",
+        "linkedin": "https://fr.linkedin.com/in/nissia-graine-40396a45"
+      },
+      {
+        "name": "Loriane Valtier",
+        "email": "",
+        "linkedin": "https://fr.linkedin.com/in/loriane-valtier-45951563"
+      }
+    ],
+    "careerUrl": "https://to.indeed.com/aavglql8tn8k",
+    "location": "Paris 8e (75) · ~40 km",
+    "offerId": "covivio-sysnet-paris"
+  },
+  {
     "id": "mnhosyzljzpho7nhso",
     "company": "Equans",
     "position": "Alternance – Technicien Systèmes de Sûreté F/H",
