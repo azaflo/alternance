@@ -1163,8 +1163,8 @@
     const o = offersCache[offerId];
     if (!o) return;
 
-    pendingOfferData = o;
     openModal();
+    pendingOfferData = o;
 
     setTimeout(() => {
       document.getElementById('f-company').value  = o.company || '';
