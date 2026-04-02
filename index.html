@@ -679,7 +679,7 @@ function toggleApplied() {
       if (!res.ok) { setSyncStatus('error'); return null; }
       const data = await res.json();
       localStorage.setItem(GH_SHA_KEY, data.sha);
-      const content = JSON.parse(atob(data.content.replace(/\n/g, '')));
+      const content = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
       setSyncStatus('ok');
       return content;
     } catch { setSyncStatus('error'); return null; }
