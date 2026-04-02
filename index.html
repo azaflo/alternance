@@ -673,7 +673,7 @@ function toggleApplied() {
     setSyncStatus('syncing');
     try {
       const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
-        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Cache-Control': 'no-cache' }
       });
       if (res.status === 404) { setSyncStatus('ok'); return []; }
       if (res.status === 304) { setSyncStatus('ok'); return entries; }
