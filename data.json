@@ -1,5 +1,31 @@
 [
   {
+    "id": "mnhoqgld85e4myxhjpv",
+    "company": "Equans",
+    "position": "Alternance – Ingénieur logiciel et SI F/H",
+    "date": "2026-04-02",
+    "source": "Indeed",
+    "status": "envoye",
+    "link": "https://to.indeed.com/aab7wkgzsm9n",
+    "notes": "",
+    "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je recherche un contrat d'apprentissage pour intégrer une Licence Générale Informatique spécialité Cybersécurité. Votre offre d'alternance pour le poste d'Ingénieur logiciel et SI au sein d'Equans à Lieusaint m'a particulièrement intéressé.\n\nLa proximité géographique de votre site de Lieusaint, mais surtout la dimension multidisciplinaire du poste — entre développement logiciel et gestion des systèmes d'information — constituent une opportunité d'apprentissage idéale pour consolider mes compétences techniques dans un contexte industriel exigeant.\n\nMa formation m'a apporté des bases solides en réseaux, systèmes et programmation. Je maîtrise les environnements Linux et Windows, j'ai une expérience en scripting (Bash, PowerShell) et je comprends les architectures SI d'entreprise. La sécurité étant au cœur de ma spécialisation, je porte également une attention particulière à l'intégration des bonnes pratiques de sécurité dans les développements.\n\nDisponible et motivé, je serais ravi de vous présenter ma candidature lors d'un entretien.\n\nVeuillez agréer, Madame, Monsieur, mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
+    "hrContacts": [
+      {
+        "name": "Benjamin Favre",
+        "email": "",
+        "linkedin": "https://fr.linkedin.com/in/benjamin-favre-2107ab175"
+      },
+      {
+        "name": "Jerome Pasque",
+        "email": "",
+        "linkedin": "https://fr.linkedin.com/in/j%C3%A9r%C3%B4me-pasqu%C3%A9-b9034649"
+      }
+    ],
+    "careerUrl": "https://www.equans.fr/candidatez",
+    "location": "Lieusaint (77) · ~7 km",
+    "offerId": "equans-si"
+  },
+  {
     "id": "mnhoqcvih6o0pbkroz8",
     "company": "Equans",
     "position": "Alternance – Technicien maintenance Sûreté F/H",
