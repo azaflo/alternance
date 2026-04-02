@@ -2,13 +2,16 @@
 Radar-Alternance — Pipeline d'enrichissement des contacts recruteurs
 ====================================================================
 Pour chaque offre dans window.injectOffers('indeed', [...]) :
-  1. Cherche le(s) responsable(s) LinkedIn via SerpApi (ville + service)
-  2. Trouve leur email pro via Hunter.io (domain-search puis email-finder)
-  3. Injecte les contacts dans index.html (champ hrContacts)
+  1. Tente d'extraire le nom du recruteur depuis la page de l'offre
+  2. Cherche le(s) responsable(s) LinkedIn via SerpApi (nom > département > fallback)
+  3. Trouve leur email pro via Hunter.io (domain-search puis email-finder)
+  4. Injecte les contacts dans index.html (champ hrContacts)
+  5. Propage les contacts enrichis vers les entrées liées dans data.json
 
 Secrets GitHub requis : HUNTER_API_KEY, SERPAPI_KEY
 """
 
+import json
 import os
 import re
 import time
@@ -23,6 +26,7 @@ def remove_accents(s):
 HUNTER_KEY   = os.getenv("HUNTER_API_KEY", "")
 SERPAPI_KEY  = os.getenv("SERPAPI_KEY", "")
 HTML_FILE    = "index.html"
+DATA_FILE    = "data.json"
 MAX_CONTACTS = 3      # profils LinkedIn max par offre
 DELAY        = 0.8    # secondes entre appels API
 
@@ -77,16 +81,21 @@ def parse_offers(html: str) -> list[dict]:
         if pos == -1:
             continue
 
-        # Fenêtre de 800 chars : couvre tous les champs sauf coverLetter
+        # Fenêtre de 800 chars pour champs courts
         window = html[pos: pos + 800]
+        # Fenêtre élargie pour url/careerUrl (plus loin dans l'objet)
+        window_large = html[pos: pos + 1600]
 
-        def field(key: str) -> str | None:
-            m = re.search(rf'{key}:\s*["\']([^"\']+)["\']', window)
+        def field(key: str, w: str = None) -> str | None:
+            src = w if w is not None else window
+            m = re.search(rf'{key}:\s*["\']([^"\']+)["\']', src)
             return m.group(1).strip() if m else None
 
         company  = field("company")
         title    = field("title")
         location = field("location")
+        url      = field("url",      window_large)
+        career_url = field("careerUrl", window_large)
 
         if not company:
             continue
@@ -105,13 +114,62 @@ def parse_offers(html: str) -> list[dict]:
             "location":   location or "",
             "city":       city,
             "department": _detect_department(title or ""),
+            "url":        url,
+            "career_url": career_url,
         })
 
     return offers
 
 
 # ══════════════════════════════════════════════════════════════════════════
-# 2. RECHERCHE LINKEDIN VIA SERPAPI
+# 2. EXTRACTION DU RECRUTEUR DEPUIS LA PAGE DE L'OFFRE
+# ══════════════════════════════════════════════════════════════════════════
+
+RECRUITER_PATTERNS = [
+    r"Postulez auprès de\s*[:\-]?\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)",
+    r"Contact\s*[:\-]\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)",
+    r"Responsable\s+(?:RH|recrutement|du recrutement)\s*[:\-]?\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)",
+    r"Recruteur\s*[:\-]\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)",
+    r"Publié par\s*[:\-]?\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)",
+    r'"hiringOrganization".*?"name"\s*:\s*"([^"]+)"',  # JSON-LD fallback
+]
+
+_FETCH_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept-Language": "fr-FR,fr;q=0.9",
+}
+
+
+def fetch_recruiter_name(url: str | None) -> tuple[str | None, str | None]:
+    """
+    Télécharge la page de l'offre et tente d'extraire le nom du recruteur.
+    Retourne (first_name, last_name) ou (None, None) si introuvable / erreur.
+    """
+    if not url:
+        return None, None
+    try:
+        r = requests.get(url, headers=_FETCH_HEADERS, timeout=10)
+        if not r.ok:
+            return None, None
+        text = r.text
+        for pattern in RECRUITER_PATTERNS:
+            m = re.search(pattern, text)
+            if m:
+                full = m.group(1).strip()
+                parts = full.split()
+                if len(parts) >= 2:
+                    return parts[0], " ".join(parts[1:])
+    except Exception:
+        pass
+    return None, None
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# 3. RECHERCHE LINKEDIN VIA SERPAPI
 # ══════════════════════════════════════════════════════════════════════════
 
 def _clean_company(name: str) -> str:
@@ -126,13 +184,25 @@ def _clean_company(name: str) -> str:
     return re.sub(r"\s+", " ", name).strip()
 
 
-def _build_queries(company: str, city: str | None, dept: str | None) -> list[str]:
+def _build_queries(
+    company: str,
+    city: str | None,
+    dept: str | None,
+    recruiter_first: str | None = None,
+    recruiter_last: str | None = None,
+) -> list[str]:
     """
-    Génère jusqu'à 3 requêtes Google du plus précis au plus large.
-    On retire les doublons en conservant l'ordre.
+    Génère jusqu'à 4 requêtes Google du plus précis au plus large.
+    Priorité : nom recruteur > département > manager IT/RH > fallback.
     """
     c = _clean_company(company)
     pool = []
+
+    # Niveau 0 — Nom du recruteur explicite (le plus précis)
+    if recruiter_first and recruiter_last:
+        pool.append(
+            f'site:linkedin.com/in/ "{recruiter_first} {recruiter_last}" "{c}"'
+        )
 
     # Niveau 1 — département + ville + entreprise
     if dept and city:
@@ -167,7 +237,13 @@ def _build_queries(company: str, city: str | None, dept: str | None) -> list[str
     return unique
 
 
-def find_linkedin_profiles(company: str, city: str | None, dept: str | None) -> list[str]:
+def find_linkedin_profiles(
+    company: str,
+    city: str | None,
+    dept: str | None,
+    recruiter_first: str | None = None,
+    recruiter_last: str | None = None,
+) -> list[str]:
     """
     Retourne jusqu'à MAX_CONTACTS URLs LinkedIn.
     Essaie chaque requête en cascade et s'arrête au premier succès.
@@ -176,8 +252,8 @@ def find_linkedin_profiles(company: str, city: str | None, dept: str | None) -> 
         print("  ⚠  SERPAPI_KEY manquante")
         return []
 
-    queries = _build_queries(company, city, dept)
-    labels  = ["précis", "intermédiaire", "large"]
+    queries = _build_queries(company, city, dept, recruiter_first, recruiter_last)
+    labels  = ["recruteur", "précis", "intermédiaire", "large"]
 
     for i, query in enumerate(queries):
         label = labels[i] if i < len(labels) else "large"
@@ -219,7 +295,7 @@ def find_linkedin_profiles(company: str, city: str | None, dept: str | None) -> 
 
 
 # ══════════════════════════════════════════════════════════════════════════
-# 3. RÉSOLUTION EMAIL VIA HUNTER.IO
+# 4. RÉSOLUTION EMAIL VIA HUNTER.IO
 # ══════════════════════════════════════════════════════════════════════════
 
 def _domain_matches_company(domain: str, company: str) -> bool:
@@ -230,7 +306,6 @@ def _domain_matches_company(domain: str, company: str) -> bool:
     Stratégie : au moins UN mot significatif du nom de l'entreprise
     doit apparaître dans le domaine (après normalisation).
     """
-    # Normalisation : minuscules, suppression accents basiques
     def norm(s: str) -> str:
         s = s.lower()
         for a, b in [("é","e"),("è","e"),("ê","e"),("à","a"),("â","a"),("ô","o"),("û","u"),("î","i")]:
@@ -240,7 +315,6 @@ def _domain_matches_company(domain: str, company: str) -> bool:
     domain_n  = norm(domain)
     company_n = norm(company)
 
-    # Mots significatifs de l'entreprise (≥ 4 chars, hors mots génériques)
     stopwords = {"group", "groupe", "france", "services", "solutions",
                  "technologies", "federation", "nationale", "internationale"}
     words = [
@@ -273,7 +347,6 @@ def _find_domain(company: str) -> str | None:
             if _domain_matches_company(domain, company):
                 print(f"     🌐 Domaine : {domain}")
                 return domain
-            # Domaine incohérent → on ne l'utilise pas
             return None
     except Exception as e:
         print(f"     ✗  Hunter domain-search : {e}")
@@ -318,7 +391,7 @@ def resolve_email(first: str, last: str, company: str) -> str | None:
 def name_from_linkedin_url(url: str):
     try:
         slug = url.rstrip("/").split("/in/")[-1]
-        slug = unquote(slug)  # ← ajoute cette ligne
+        slug = unquote(slug)
         slug = re.sub(r"-[a-z0-9]{4,}$", "", slug)
         parts = [p for p in slug.split("-") if p and not p.isdigit()]
         if len(parts) >= 2:
@@ -329,7 +402,7 @@ def name_from_linkedin_url(url: str):
 
 
 # ══════════════════════════════════════════════════════════════════════════
-# 4. INJECTION DANS INDEX.HTML
+# 5. INJECTION DANS INDEX.HTML
 # ══════════════════════════════════════════════════════════════════════════
 
 def _replace_or_insert_field(html: str, id_pos: int, field_name: str, field_value: str) -> str:
@@ -357,11 +430,6 @@ def inject_contacts(html: str, offer_id: str, contacts: list[dict]) -> str:
     """
     - 1er contact  →  hrEmail  (email principal, affiché en badge vert)
     - Contacts suivants  →  hrContacts  (contacts supplémentaires)
-
-    Structure injectée :
-        hrEmail: "jean.dupont@company.fr",
-        hrContacts: [{name: "Marie Martin", email: "m.martin@company.fr"}],
-        logo: "🏦",
     """
     if not contacts:
         return html
@@ -383,7 +451,8 @@ def inject_contacts(html: str, offer_id: str, contacts: list[dict]) -> str:
         if m2:
             id_pos = m2.start()
             items_js = ", ".join(
-                f'{{name: "{c["name"]}", email: "{c["email"]}", linkedin: "{c.get("linkedin", "")}"}}'  for c in contacts[1:]
+                f'{{name: "{c["name"]}", email: "{c["email"]}", linkedin: "{c.get("linkedin", "")}"}}'
+                for c in contacts[1:]
             )
             new_hrc = f'hrContacts: [{items_js}]'
             zone = html[id_pos: id_pos + 950]
@@ -401,9 +470,68 @@ def inject_contacts(html: str, offer_id: str, contacts: list[dict]) -> str:
     return html
 
 
+# ══════════════════════════════════════════════════════════════════════════
+# 6. PROPAGATION VERS DATA.JSON (candidatures envoyées)
+# ══════════════════════════════════════════════════════════════════════════
+
+def sync_data_json(offer_contacts: dict[str, list[dict]]) -> None:
+    """
+    Met à jour les entrées de data.json dont le champ offerId correspond
+    à une offre qui vient d'être enrichie.
+
+    offer_contacts : { offer_id: [{"name": ..., "email": ..., "linkedin": ...}, ...] }
+    """
+    if not offer_contacts:
+        return
+    if not os.path.exists(DATA_FILE):
+        print(f"  ℹ  {DATA_FILE} absent, propagation ignorée")
+        return
+
+    try:
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            entries = json.load(f)
+    except Exception as e:
+        print(f"  ✗  Lecture data.json : {e}")
+        return
+
+    updated = 0
+    for entry in entries:
+        offer_id = entry.get("offerId")
+        if not offer_id or offer_id not in offer_contacts:
+            continue
+
+        contacts = offer_contacts[offer_id]
+        if not contacts:
+            continue
+
+        # Mise à jour des contacts (même logique qu'inject_contacts)
+        first_contact = contacts[0]
+        if first_contact.get("email"):
+            entry["hrEmail"] = first_contact["email"]
+
+        extra = [
+            {"name": c["name"], "email": c["email"], "linkedin": c.get("linkedin", "")}
+            for c in contacts[1:]
+        ]
+        if extra:
+            entry["hrContacts"] = extra
+
+        updated += 1
+
+    if updated == 0:
+        print(f"  ℹ  Aucune candidature liée dans {DATA_FILE}")
+        return
+
+    try:
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(entries, f, ensure_ascii=False, indent=2)
+        print(f"  ✅ {updated} candidature(s) mise(s) à jour dans {DATA_FILE}")
+    except Exception as e:
+        print(f"  ✗  Écriture data.json : {e}")
+
 
 # ══════════════════════════════════════════════════════════════════════════
-# 5. PIPELINE PRINCIPAL
+# 7. PIPELINE PRINCIPAL
 # ══════════════════════════════════════════════════════════════════════════
 
 def run():
@@ -426,6 +554,7 @@ def run():
 
     print(f"\n📋 {len(offers)} offre(s) détectée(s)\n")
     enriched = 0
+    offer_contacts: dict[str, list[dict]] = {}  # pour sync data.json
 
     for offer in offers:
         oid  = offer["id"]
@@ -436,22 +565,31 @@ def run():
         print(f"▶ {comp}  [{oid}]")
         print(f"  📍 {city or '?'}  |  🗂  {dept or 'service non détecté'}")
 
-        # Étape A — LinkedIn
-        profiles = find_linkedin_profiles(comp, city, dept)
+        # Étape A — Extraction du nom du recruteur depuis la page de l'offre
+        rec_first, rec_last = fetch_recruiter_name(offer.get("url"))
+        if rec_first and rec_last:
+            print(f"  👤 Recruteur détecté : {rec_first} {rec_last}")
+        else:
+            print("  👤 Recruteur non détecté, recherche générique")
+
+        # Étape B — LinkedIn
+        profiles = find_linkedin_profiles(comp, city, dept, rec_first, rec_last)
         if not profiles:
             print()
             continue
 
-        # Étape B — Hunter.io pour chaque profil
+        # Étape C — Hunter.io pour chaque profil
         contacts = []
         for url in profiles:
-            first, last = name_from_linkedin_url(url)
+            # Si le recruteur a été trouvé et c'est la 1ère URL, utiliser son nom exact
+            if rec_first and rec_last and url == profiles[0]:
+                first, last = rec_first, rec_last
+            else:
+                first, last = name_from_linkedin_url(url)
+
             if not (first and last):
                 print(f"  ✗  Nom non extractible depuis : {url}")
                 continue
-
-            print(f"  👤 {first} {last}...")
-            email = resolve_email(first, last, comp)
 
             print(f"  👤 {first} {last}...")
             email = resolve_email(first, last, comp)
@@ -465,18 +603,21 @@ def run():
 
             time.sleep(DELAY)
 
-        # Étape C — Injection dans index.html
+        # Étape D — Injection dans index.html
         if contacts:
             html = inject_contacts(html, oid, contacts)
-            print(f"  ✅ {len(contacts)} contact(s) injecté(s)")
+            print(f"  ✅ {len(contacts)} contact(s) injecté(s) dans index.html")
             enriched += 1
-        else:
-            print("  ✗  Aucun email récupérable")
+            offer_contacts[oid] = contacts
 
         print()
 
     with open(HTML_FILE, "w", encoding="utf-8") as f:
         f.write(html)
+
+    # Étape E — Propagation vers les candidatures envoyées (data.json)
+    print("── Propagation vers les candidatures ──────────────────────")
+    sync_data_json(offer_contacts)
 
     print(SEP)
     print(f"  ✅ {enriched}/{len(offers)} offre(s) enrichie(s)  —  index.html mis à jour")

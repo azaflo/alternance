@@ -730,6 +730,28 @@
   }
 
   // ══════════════════════════════════════════════════════════════════════════
+  // MERGE — last write wins par entrée (basé sur updatedAt)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  function mergeEntries(local, remote) {
+    const merged = new Map();
+    for (const e of remote) merged.set(e.id, e);
+    for (const e of local) {
+      if (!merged.has(e.id)) {
+        // Entrée locale uniquement (ajoutée hors-ligne) → on garde
+        merged.set(e.id, e);
+      } else {
+        // Conflit : on prend la version avec updatedAt le plus récent
+        const rem = merged.get(e.id);
+        if ((e.updatedAt || 0) > (rem.updatedAt || 0)) {
+          merged.set(e.id, e);
+        }
+      }
+    }
+    return [...merged.values()];
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
   // DATA — localStorage cache + GitHub sync
   // ══════════════════════════════════════════════════════════════════════════
 
@@ -776,12 +798,12 @@
     closeSettings();
     const remote = await loadFromGitHub();
     if (remote !== null) {
-      const remoteIds = new Set(remote.map(e => e.id));
-      const localOnly = entries.filter(e => !remoteIds.has(e.id));
-      entries = [...localOnly, ...remote];
+      const merged = mergeEntries(entries, remote);
+      const hasLocalChanges = JSON.stringify(merged) !== JSON.stringify(remote);
+      entries = merged;
       saveLocal(entries);
       renderTable();
-      if (localOnly.length > 0) saveToGitHub(entries);
+      if (hasLocalChanges) saveToGitHub(entries);
       showToast('✅ Synchronisé avec GitHub !');
     }
   }
@@ -1053,6 +1075,7 @@
       status: document.getElementById('f-status').value,
       link:   document.getElementById('f-link').value.trim(),
       notes:  document.getElementById('f-notes').value.trim(),
+      updatedAt: Date.now(),
     };
 
     if (editId) {
@@ -1233,13 +1256,15 @@
   // Sync GitHub en arrière-plan
   (async () => {
     const remote = await loadFromGitHub();
-    if (remote !== null && JSON.stringify(remote) !== JSON.stringify(entries)) {
-      const remoteIds = new Set(remote.map(e => e.id));
-      const localOnly = entries.filter(e => !remoteIds.has(e.id));
-      entries = [...localOnly, ...remote];
-      saveLocal(entries);
-      renderTable();
-      if (localOnly.length > 0) saveToGitHub(entries);
+    if (remote !== null) {
+      const merged = mergeEntries(entries, remote);
+      const hasLocalChanges = JSON.stringify(merged) !== JSON.stringify(remote);
+      if (JSON.stringify(merged) !== JSON.stringify(entries)) {
+        entries = merged;
+        saveLocal(entries);
+        renderTable();
+      }
+      if (hasLocalChanges) saveToGitHub(entries);
     }
   })();
 
