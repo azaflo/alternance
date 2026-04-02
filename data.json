@@ -1,5 +1,26 @@
 [
   {
+    "id": "mnhoqk1vhor6b73td2c",
+    "company": "Crédit Agricole",
+    "position": "Alternance – Sécurité informatique SOC F/H",
+    "date": "2026-04-02",
+    "source": "Indeed",
+    "status": "envoye",
+    "link": "https://to.indeed.com/aamjdf4kp9bc",
+    "notes": "",
+    "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je suis à la recherche d'un contrat d'apprentissage dans le cadre de ma Licence Générale Informatique spécialité Cybersécurité. Votre offre d'alternance au sein du service Sécurité informatique SOC du Crédit Agricole a immédiatement retenu mon attention.\n\nIntégrer le Centre des Opérations de Sécurité du Crédit Agricole représente pour moi une opportunité exceptionnelle d'évoluer dans un environnement où la sécurité des systèmes d'information est une priorité stratégique. La dimension à la fois technique et analytique du poste — détection d'incidents, analyse des menaces, investigation — correspond parfaitement à la spécialisation cybersécurité que je souhaite approfondir.\n\nAu cours de ma formation, j'ai acquis des compétences solides en administration réseau (routage, switching, VLAN), en sécurisation des systèmes Linux et Windows, ainsi qu'une première approche des outils SIEM et des méthodes d'analyse de logs. Ma curiosité pour les techniques offensives et défensives (CTF, veille cybersécurité) me permettrait de contribuer activement à votre équipe SOC.\n\nRigoureux, impliqué et motivé, je serais heureux de vous présenter mon parcours plus en détail lors d'un entretien.\n\nDans cette attente, je vous adresse mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
+    "hrContacts": [
+      {
+        "name": "Leslie Ta",
+        "email": "",
+        "linkedin": "https://fr.linkedin.com/in/leslie-ta-865654120"
+      }
+    ],
+    "careerUrl": "https://recrutement.ca-paris.fr/",
+    "location": "Brunoy (91) · ~30 km",
+    "offerId": "ca-soc"
+  },
+  {
     "id": "mnhoqgld85e4myxhjpv",
     "company": "Equans",
     "position": "Alternance – Ingénieur logiciel et SI F/H",
