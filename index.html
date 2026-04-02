@@ -388,6 +388,21 @@
     .hr-contacts-cell a { color: #a78bfa; }
     .hr-contacts-cell .hr-email { color: #86efac; }
 
+    /* ── Offres suivies ── */
+    .offer-applied { filter: grayscale(0.8); opacity: 0.6; }
+    .offer-applied .offer-actions button,
+    .offer-applied .offer-actions a { pointer-events: none; cursor: default; }
+    .offers-applied-header {
+      padding: 14px 24px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+    }
+
     /* ── Toast ── */
     #toast {
       position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
@@ -511,6 +526,10 @@
           Les offres d'emploi récupérées via Indeed apparaîtront ici automatiquement.
         </div>
         <div id="indeed-offers"></div>
+        <div id="indeed-applied-section" style="display:none">
+          <div class="offers-applied-header">✅ Candidatures envoyées</div>
+          <div id="indeed-applied"></div>
+        </div>
       </div>
 
       <!-- LinkedIn tab -->
@@ -521,6 +540,10 @@
           Les offres d'emploi récupérées via LinkedIn apparaîtront ici automatiquement.
         </div>
         <div id="linkedin-offers"></div>
+        <div id="linkedin-applied-section" style="display:none">
+          <div class="offers-applied-header">✅ Candidatures envoyées</div>
+          <div id="linkedin-applied"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1062,6 +1085,7 @@
     save(entries);
     closeModal();
     renderTable();
+    refreshAllOffers();
     showToast('✅ Candidature enregistrée !');
   }
 
@@ -1089,23 +1113,83 @@
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // INJECT OFFERS — V2: sans section "candidatures envoyées"
+  // INJECT OFFERS — V3: section "candidatures envoyées" + tri ordre injection
   // ══════════════════════════════════════════════════════════════════════════
 
-  const offerLetters = {};
+  const offerLetters  = {};
+  const offersCache   = {};
+  const offersBySource = {};
 
-  // Offres déjà dans les candidatures (par offerId)
   function isOfferTracked(offerId) {
     return entries.some(e => e.offerId === offerId);
   }
 
-  window.injectOffers = function(source, offers) {
-    const container = document.getElementById(source + '-offers');
+  function renderOfferCard(o, applied) {
+    return `
+    <div class="offer-card${applied ? ' offer-applied' : ''}" id="offer-card-${o.id}">
+      <div class="offer-logo">${o.logo || '🏢'}</div>
+      <div class="offer-info">
+        <div class="title">${escHtml(o.title)}</div>
+        <div class="company">${escHtml(o.company)} · ${escHtml(o.location || '')}</div>
+        <div class="offer-tags">
+          ${(o.tags || []).map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}
+          ${o.hrEmail
+            ? `<span class="tag" style="color:#86efac;border-color:#22c55e44">✉ ${escHtml(o.hrEmail)}</span>`
+            : '<span class="tag" style="color:#f87171;border-color:#ef444444">✉ email non public</span>'}
+          ${(o.hrContacts || []).filter(c => c.email).map(c => `
+            <span class="tag" style="color:#a78bfa;border-color:#7c3aed44" title="${escHtml(c.name)}">✉ ${escHtml(c.email)}</span>
+          `).join('')}
+          ${(o.hrContacts || []).filter(c => c.linkedin && !c.email).map(c => `
+            <a href="${escHtml(c.linkedin)}" target="_blank" class="tag" style="color:#7b9dff;border-color:#4f6ef744;text-decoration:none">👤 ${escHtml(c.name)}</a>
+          `).join('')}
+        </div>
+      </div>
+      <div class="offer-actions">
+        ${o.url ? `<a href="${escHtml(o.url)}" target="_blank" class="btn btn-ghost btn-sm">Indeed</a>` : ''}
+        ${o.careerUrl && o.careerUrl !== o.url ? `<a href="${escHtml(o.careerUrl)}" target="_blank" class="btn btn-direct btn-sm">🏢 Portail</a>` : ''}
+        ${o.coverLetter ? `<button class="btn btn-ghost btn-sm" onclick="showCoverLetterForOffer('${o.id}')">✉️ Lettre</button>` : ''}
+        ${applied
+          ? `<span class="btn btn-sm" style="color:var(--green);cursor:default">✓ Suivi</span>`
+          : `<button class="btn btn-primary btn-sm" onclick="prefillFromOffer('${o.id}')">+ Suivi</button>`
+        }
+      </div>
+    </div>`;
+  }
+
+  function renderOffersForSource(source) {
+    const offers = offersBySource[source] || [];
+    const container       = document.getElementById(source + '-offers');
+    const appliedSection  = document.getElementById(source + '-applied-section');
+    const appliedContainer = document.getElementById(source + '-applied');
     if (!container) return;
+
     const cs = container.previousElementSibling;
     if (cs && cs.classList.contains('coming-soon')) cs.style.display = 'none';
 
+    const untracked = offers.filter(o => !isOfferTracked(o.id));
+    const tracked   = offers.filter(o =>  isOfferTracked(o.id));
+
+    container.innerHTML = untracked.map(o => renderOfferCard(o, false)).join('');
+
+    if (appliedSection && appliedContainer) {
+      if (tracked.length > 0) {
+        appliedContainer.innerHTML = tracked.map(o => renderOfferCard(o, true)).join('');
+        appliedSection.style.display = 'block';
+      } else {
+        appliedContainer.innerHTML = '';
+        appliedSection.style.display = 'none';
+      }
+    }
+  }
+
+  function refreshAllOffers() {
+    Object.keys(offersBySource).forEach(src => renderOffersForSource(src));
+  }
+
+  window.injectOffers = function(source, offers) {
+    offersBySource[source] = offers;
     offers.forEach(o => {
+      offersCache[o.id] = o;
       if (o.coverLetter) {
         offerLetters[o.id] = {
           title: o.title, company: o.company, location: o.location || '',
@@ -1113,50 +1197,7 @@
         };
       }
     });
-
-    container.innerHTML = offers.map(o => {
-      const tracked = isOfferTracked(o.id);
-      const opacity = tracked ? 'opacity:0.35;pointer-events:none;' : '';
-
-      return `
-      <div class="offer-card" id="offer-card-${o.id}" style="${opacity}">
-        <div class="offer-logo">${o.logo || '🏢'}</div>
-        <div class="offer-info">
-          <div class="title">${escHtml(o.title)}</div>
-          <div class="company">${escHtml(o.company)} · ${escHtml(o.location || '')}</div>
-          <div class="offer-tags">
-            ${(o.tags || []).map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}
-            ${o.hrEmail
-              ? `<span class="tag" style="color:#86efac;border-color:#22c55e44">✉ ${escHtml(o.hrEmail)}</span>`
-              : '<span class="tag" style="color:#f87171;border-color:#ef444444">✉ email non public</span>'}
-            ${(o.hrContacts || []).filter(c => c.email).map(c => `
-              <span class="tag" style="color:#a78bfa;border-color:#7c3aed44" title="${escHtml(c.name)}">✉ ${escHtml(c.email)}</span>
-            `).join('')}
-            ${(o.hrContacts || []).filter(c => c.linkedin && !c.email).map(c => `
-              <a href="${escHtml(c.linkedin)}" target="_blank" class="tag" style="color:#7b9dff;border-color:#4f6ef744;text-decoration:none">👤 ${escHtml(c.name)}</a>
-            `).join('')}
-          </div>
-        </div>
-        <div class="offer-actions">
-          ${o.url ? `<a href="${escHtml(o.url)}" target="_blank" class="btn btn-ghost btn-sm">Indeed</a>` : ''}
-          ${o.careerUrl && o.careerUrl !== o.url ? `<a href="${escHtml(o.careerUrl)}" target="_blank" class="btn btn-direct btn-sm">🏢 Portail</a>` : ''}
-          ${o.coverLetter ? `<button class="btn btn-ghost btn-sm" onclick="showCoverLetterForOffer('${o.id}')">✉️ Lettre</button>` : ''}
-          ${tracked
-            ? `<span class="btn btn-sm" style="color:var(--green);cursor:default">✓ Suivi</span>`
-            : `<button class="btn btn-primary btn-sm" onclick="prefillFromOffer('${o.id}')">+ Suivi</button>`
-          }
-        </div>
-      </div>`;
-    }).join('');
-  };
-
-  // Stocker les offres injectées pour le prefill
-  const offersCache = {};
-
-  const _origInject = window.injectOffers;
-  window.injectOffers = function(source, offers) {
-    offers.forEach(o => { offersCache[o.id] = o; });
-    _origInject(source, offers);
+    renderOffersForSource(source);
   };
 
   window.prefillFromOffer = function(offerId) {
