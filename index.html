@@ -913,11 +913,8 @@
   function renderHrContacts(e) {
     let html = '';
 
-    if (e.hrEmail) {
-      html += `<span class="hr-email">✉ ${escHtml(e.hrEmail)}</span><br>`;
-    }
-
     if (e.hrContacts && e.hrContacts.length > 0) {
+      // hrContacts contient tous les contacts (email + LinkedIn pour chacun)
       e.hrContacts.forEach(c => {
         const name = escHtml(c.name || '');
         if (c.email) {
@@ -930,6 +927,9 @@
         }
         html += '<br>';
       });
+    } else if (e.hrEmail) {
+      // Fallback : ancienne structure sans hrContacts
+      html += `<span class="hr-email">✉ ${escHtml(e.hrEmail)}</span><br>`;
     }
 
     return html || '<span style="color:var(--text-muted)">—</span>';

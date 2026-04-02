@@ -433,8 +433,8 @@ def _replace_or_insert_field(html: str, id_pos: int, field_name: str, field_valu
 
 def inject_contacts(html: str, offer_id: str, contacts: list[dict]) -> str:
     """
-    - 1er contact  →  hrEmail  (email principal, affiché en badge vert)
-    - Contacts suivants  →  hrContacts  (contacts supplémentaires)
+    - hrEmail     ← email du 1er contact (pour mailto, badge vert)
+    - hrContacts  ← TOUS les contacts avec name + email + linkedin
     """
     if not contacts:
         return html
@@ -446,32 +446,31 @@ def inject_contacts(html: str, offer_id: str, contacts: list[dict]) -> str:
 
     id_pos = m.start()
 
-    # hrEmail ← 1er contact
+    # hrEmail ← email du 1er contact (pour mailto)
     first_email = contacts[0]["email"]
     html = _replace_or_insert_field(html, id_pos, "hrEmail", f'"{first_email}"')
 
-    # hrContacts ← contacts suivants
-    if len(contacts) > 1:
-        m2 = re.search(rf"id:\s*['\"]({re.escape(offer_id)})['\"]", html)
-        if m2:
-            id_pos = m2.start()
-            items_js = ", ".join(
-                f'{{name: "{c["name"]}", email: "{c["email"]}", linkedin: "{c.get("linkedin", "")}"}}'
-                for c in contacts[1:]
-            )
-            new_hrc = f'hrContacts: [{items_js}]'
-            zone = html[id_pos: id_pos + 950]
-            existing_hrc = re.search(r"hrContacts:\s*\[.*?\]", zone, re.DOTALL)
-            if existing_hrc:
-                abs_s = id_pos + existing_hrc.start()
-                abs_e = id_pos + existing_hrc.end()
-                html  = html[:abs_s] + new_hrc + html[abs_e:]
-            else:
-                logo_m = re.search(r"\n(\s*)logo:", zone)
-                if logo_m:
-                    insert_at = id_pos + logo_m.start()
-                    indent    = logo_m.group(1)
-                    html = html[:insert_at] + f"\n{indent}{new_hrc}," + html[insert_at:]
+    # hrContacts ← tous les contacts (LinkedIn conservé pour chacun)
+    m2 = re.search(rf"id:\s*['\"]({re.escape(offer_id)})['\"]", html)
+    if m2:
+        id_pos = m2.start()
+        items_js = ", ".join(
+            f'{{name: "{c["name"]}", email: "{c["email"]}", linkedin: "{c.get("linkedin", "")}"}}'
+            for c in contacts
+        )
+        new_hrc = f'hrContacts: [{items_js}]'
+        zone = html[id_pos: id_pos + 950]
+        existing_hrc = re.search(r"hrContacts:\s*\[.*?\]", zone, re.DOTALL)
+        if existing_hrc:
+            abs_s = id_pos + existing_hrc.start()
+            abs_e = id_pos + existing_hrc.end()
+            html  = html[:abs_s] + new_hrc + html[abs_e:]
+        else:
+            logo_m = re.search(r"\n(\s*)logo:", zone)
+            if logo_m:
+                insert_at = id_pos + logo_m.start()
+                indent    = logo_m.group(1)
+                html = html[:insert_at] + f"\n{indent}{new_hrc}," + html[insert_at:]
     return html
 
 
