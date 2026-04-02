@@ -14,6 +14,8 @@ import re
 import time
 import requests
 import unicodedata
+from urllib.parse import unquote
+
 def remove_accents(s):
     return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
 
@@ -313,14 +315,10 @@ def resolve_email(first: str, last: str, company: str) -> str | None:
     return _find_email(first, last, domain)
 
 
-def name_from_linkedin_url(url: str) -> tuple[str | None, str | None]:
-    """
-    /in/jean-dupont-abc123  →  ("Jean", "Dupont")
-    Gère les slugs avec tirets multiples et identifiants de sécurité.
-    """
+def name_from_linkedin_url(url: str):
     try:
         slug = url.rstrip("/").split("/in/")[-1]
-        # Retire l'identifiant de sécurité : suite alphanum 4+ chars en fin de slug
+        slug = unquote(slug)  # ← ajoute cette ligne
         slug = re.sub(r"-[a-z0-9]{4,}$", "", slug)
         parts = [p for p in slug.split("-") if p and not p.isdigit()]
         if len(parts) >= 2:
