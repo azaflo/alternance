@@ -1,5 +1,31 @@
 [
   {
+    "id": "mnhoq3spr0tjq9fydr",
+    "company": "NRJ Audio (NRJ Group)",
+    "position": "ALTERNANT Technicien Support Informatique H/F/NB",
+    "date": "2026-04-02",
+    "source": "Indeed",
+    "status": "envoye",
+    "link": "https://to.indeed.com/aag462vc7jpd",
+    "notes": "",
+    "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je recherche un contrat d'apprentissage pour préparer ma Licence Générale Informatique spécialité Cybersécurité. Votre offre d'alternance pour le poste de Technicien Support Informatique au sein de la Direction Informatique de NRJ Audio à Paris a retenu toute mon attention.\n\nAssurer l'assistance informatique de proximité auprès des utilisateurs des sites parisiens, préparer et dépanner les postes bureautiques, gérer les comptes Active Directory et les droits utilisateurs, créer des comptes de messagerie Exchange et gérer la flotte mobile — ce sont des missions pour lesquelles ma formation BTS SIO SISR me confère des compétences directement opérationnelles.\n\nJe maîtrise les environnements Windows (7, 10, 11), l'administration Active Directory (création de comptes, gestion des GPO, droits), l'utilisation d'outils de ticketing comme GLPI, et j'ai développé des notions de scripting PowerShell dans le cadre de mes travaux pratiques. Réactif, à l'écoute, et rigoureux dans mes interventions, je suis également à l'aise avec les outils de prise en main à distance pour le support des utilisateurs en région. Évoluer dans l'univers des médias audio au sein d'un groupe reconnu comme NRJ serait une expérience particulièrement stimulante.\n\nJe me tiens disponible pour un entretien à votre convenance.\n\nVeuillez agréer, Madame, Monsieur, l'expression de mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
+    "hrContacts": [
+      {
+        "name": "Nathalie Pinon",
+        "email": "",
+        "linkedin": "https://fr.linkedin.com/in/nathalie-pinon-77068812b"
+      },
+      {
+        "name": "Lisardo F",
+        "email": "",
+        "linkedin": "https://fr.linkedin.com/in/lisardo-f-4306729/fr"
+      }
+    ],
+    "careerUrl": "https://to.indeed.com/aag462vc7jpd",
+    "location": "Paris 16e (75) · ~38 km",
+    "offerId": "nrj-audio-support-it-paris"
+  },
+  {
     "id": "mnhohtbkdq9lle5s3sq",
     "company": "Crédit Agricole",
     "position": "Alternance – Support Utilisateurs & Habilitations F/H",
