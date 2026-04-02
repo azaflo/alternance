@@ -1,5 +1,26 @@
 [
   {
+    "id": "mnhoragbuci2jy2v84",
+    "company": "Groupama",
+    "position": "Apprenti Analyste Cybersécurité H/F",
+    "date": "2026-04-02",
+    "source": "Indeed",
+    "status": "envoye",
+    "link": "https://to.indeed.com/aaksdtvv882k",
+    "notes": "",
+    "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je recherche un contrat d'apprentissage pour préparer ma Licence Générale Informatique spécialité Cybersécurité. Votre offre d'apprentissage pour le poste d'Analyste Cybersécurité au sein de Groupama Supports et Services a retenu toute mon attention.\n\nContribuer à la surveillance et à la protection du système d'information d'un groupe d'assurance de référence — gérer des alertes SOC, optimiser les règles de détection, développer des automates dans un SOAR et exploiter la Threat Intelligence — correspond précisément au profil que je construis depuis le début de ma formation SISR.\n\nMa formation m'a permis de développer des bases solides en protocoles réseau (IP, TCP, UDP, DNS, HTTP, modèle OSI), en administration des systèmes Windows et Linux, ainsi qu'en sécurisation des infrastructures (pare-feux, VPN, filtrage). Je me forme en autonomie au scripting Python pour l'automatisation, et je porte un intérêt particulier à l'analyse des menaces et aux techniques de détection via la veille CVE et les CTF.\n\nRigoureux, curieux et motivé par les enjeux de la cybersécurité opérationnelle, je serais très heureux de vous présenter ma candidature lors d'un entretien.\n\nVeuillez agréer, Madame, Monsieur, l'expression de mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
+    "hrContacts": [
+      {
+        "name": "Julie Garcia",
+        "email": "",
+        "linkedin": "https://fr.linkedin.com/in/julie-garcia-"
+      }
+    ],
+    "careerUrl": "https://to.indeed.com/aaksdtvv882k",
+    "location": "Nanterre (92) · ~49 km",
+    "offerId": "groupama-soc-nanterre"
+  },
+  {
     "id": "mnhor3vr9ul5i82gzvi",
     "company": "VINCI Construction",
     "position": "Alternance – Technicien SI H/F",
