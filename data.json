@@ -1,5 +1,31 @@
 [
   {
+    "id": "mnhoq8vebsvvp5qemj7",
+    "company": "Carrefour",
+    "position": "Analyste Cybersécurité SOC/CERT en alternance (F/H)",
+    "date": "2026-04-02",
+    "source": "Indeed",
+    "status": "envoye",
+    "link": "https://to.indeed.com/aagzsm8xp984",
+    "notes": "",
+    "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je suis à la recherche d'un contrat d'apprentissage pour préparer ma Licence Générale Informatique spécialité Cybersécurité. Votre offre d'alternance Analyste Cybersécurité SOC/CERT au sein du Global SOC de Carrefour à Massy représente exactement le type d'environnement technique ambitieux dans lequel je souhaite évoluer.\n\nL'opportunité d'intégrer une équipe agile qui gère sa propre stack technique, crée sa propre logique de détection et intervient directement en réponse à incidents (CERT) sur un périmètre international est particulièrement stimulante. Qualifier des alertes SIEM, développer des règles de détection basées sur MITRE ATT&CK, réaliser du Threat Hunting proactif et contribuer aux phases de Digital Forensics sont des missions qui correspondent précisément à la spécialisation Cybersécurité que je prépare.\n\nMa formation BTS SIO SISR m'a permis de consolider mes connaissances en systèmes Windows/Linux, en protocoles réseaux (TCP/IP, DNS, HTTP), ainsi qu'en cybersécurité. Je développe en parallèle mes compétences en Python pour l'automatisation et je m'entraîne sur des plateformes comme TryHackMe. Ma rigueur analytique, ma curiosité et ma capacité rédactionnelle sont des atouts que je mets au service de chaque mission.\n\nMotivé à l'idée de rejoindre le Global SOC de Carrefour dès septembre 2026, je me tiens disponible pour un entretien à votre convenance.\n\nVeuillez agréer, Madame, Monsieur, l'expression de mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
+    "hrContacts": [
+      {
+        "name": "Steve Alan",
+        "email": "",
+        "linkedin": "https://fr.linkedin.com/in/steve-alan-baleba-53466a154"
+      },
+      {
+        "name": "Mohamed Reda",
+        "email": "",
+        "linkedin": "https://fr.linkedin.com/in/mohamed-reda-moharem-51410951"
+      }
+    ],
+    "careerUrl": "https://to.indeed.com/aagzsm8xp984",
+    "location": "Massy (91) · ~33 km",
+    "offerId": "carrefour-soc-cert-massy"
+  },
+  {
     "id": "mnhoq5xsqd7k44m8tp",
     "company": "Biocodex",
     "position": "Alternant(e) Technicien Support Informatique - Tous genres",
