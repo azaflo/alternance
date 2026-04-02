@@ -1,5 +1,31 @@
 [
   {
+    "id": "mnhohtbkdq9lle5s3sq",
+    "company": "Crédit Agricole",
+    "position": "Alternance – Support Utilisateurs & Habilitations F/H",
+    "date": "2026-04-02",
+    "source": "Indeed",
+    "status": "envoye",
+    "link": "https://to.indeed.com/aaypw4mnqxtr",
+    "notes": "",
+    "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je suis à la recherche d'un contrat d'apprentissage pour ma Licence Générale Informatique spécialité Cybersécurité. Votre offre d'alternance au sein du service Support et Habilitations du Crédit Agricole correspond à un domaine au croisement de l'assistance informatique et de la gestion des accès, deux axes essentiels de ma formation.\n\nLa gestion des habilitations et des droits d'accès est un pilier fondamental de la sécurité des systèmes d'information. Évoluer au sein d'un établissement bancaire de référence comme le Crédit Agricole me permettrait d'appréhender les enjeux réels de contrôle des accès, de conformité et de gouvernance des identités dans un contexte à forts impératifs de sécurité.\n\nMa formation en BTS SIO SISR m'a permis de développer des compétences en support utilisateur (niveaux 1 et 2), en gestion des comptes Active Directory, en administration des droits et politiques de groupe (GPO), ainsi qu'en sensibilisation des utilisateurs aux bonnes pratiques de sécurité. Je suis rigoureux, pédagogue et à l'aise dans la relation avec les utilisateurs.\n\nJe reste disponible pour un entretien à votre convenance.\n\nBien cordialement,\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
+    "hrContacts": [
+      {
+        "name": "Osvaldo Pimentel",
+        "email": "",
+        "linkedin": "https://fr.linkedin.com/in/osvaldo-pimentel-55524a159"
+      },
+      {
+        "name": "Nadir Bouledjeraf",
+        "email": "",
+        "linkedin": "https://fr.linkedin.com/in/nadir-bouledjeraf-974b6a172"
+      }
+    ],
+    "careerUrl": "https://recrutement.ca-paris.fr/",
+    "location": "Brunoy (91) · ~30 km",
+    "offerId": "ca-support"
+  },
+  {
     "id": "mnhhhybo56ku6dercnr",
     "company": "Equans",
     "position": "Alternance – Ingénieur logiciel et SI F/H",
