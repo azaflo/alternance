@@ -118,14 +118,9 @@
     "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je recherche un contrat d'apprentissage pour préparer ma Licence Générale Informatique spécialité Cybersécurité. Votre offre d'alternance au sein de l'équipe Cyberdéfense de CNP Assurances correspond exactement au profil de poste que je construis.\n\nÉvoluer dans un SOC au sein d'un groupe leader de l'assurance de personnes — contribuer à l'exploitation d'un SIEM, analyser des alertes de sécurité, participer à la réponse aux incidents et aux premières investigations forensics — représente une opportunité idéale pour transformer les connaissances théoriques acquises en compétences opérationnelles réelles. La mention du label HAPPY TRAINEES 2026 témoigne en outre d'une véritable culture de l'accompagnement des alternants, ce qui est déterminant dans mon choix.\n\nMa formation m'a permis de construire des bases solides en administration des systèmes Windows et Linux, en réseaux TCP/IP (routage, VLAN, firewall), ainsi qu'une sensibilisation aux architectures de sécurité (IAM, EDR, journalisation). Je me forme en autonomie à l'analyse de logs et aux techniques de détection, et je pratique le scripting Python et PowerShell pour automatiser des tâches d'administration.\n\nRigoureux, curieux et passionné par la cybersécurité opérationnelle, je serais très heureux de vous présenter ma candidature lors d'un entretien.\n\nVeuillez agréer, Madame, Monsieur, l'expression de mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
     "hrContacts": [
       {
-        "name": "Elisabeth Michaux",
+        "name": "Nadia B",
         "email": "",
-        "linkedin": "https://fr.linkedin.com/in/elisabeth-michaux-69684347"
-      },
-      {
-        "name": "Oumayma Rifqi",
-        "email": "",
-        "linkedin": "https://fr.linkedin.com/in/oumayma-rifqi-956891104"
+        "linkedin": "https://fr.linkedin.com/in/nadia-b-3aa35a177"
       }
     ],
     "careerUrl": "https://to.indeed.com/aatvdpss2m7g",
@@ -167,7 +162,8 @@
     "hrContacts": [],
     "careerUrl": "https://to.indeed.com/aa2fcdhbpzsg",
     "location": "Nanterre (92) · ~55 km",
-    "offerId": "vinci-techsi-nanterre"
+    "offerId": "vinci-techsi-nanterre",
+    "hrEmail": "aurelien.payet@vinci-construction.com"
   },
   {
     "id": "mnhoqk1vhor6b73td2c",
