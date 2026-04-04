@@ -306,5 +306,35 @@
     "careerUrl": "https://recrutement.ca-paris.fr/",
     "location": "Brunoy (91) · ~30 km",
     "offerId": "ca-support"
+  },
+  {
+    "id": "mnda7bx463vm5gc6tzr",
+    "company": "CNP Assurances",
+    "position": "Alternance  Analyste Cybersécurité SOC/SIEM H/F (Licence)",
+    "date": "2026-03-30",
+    "source": "Site entreprise",
+    "status": "envoye",
+    "link": "https://to.indeed.com/aatvdpss2m7g",
+    "notes": ""
+  },
+  {
+    "id": "mncvpk4jyncbftbhrm9",
+    "company": "Crédit Agricole",
+    "position": "Alternance sécurité informatique SOC F/H",
+    "date": "2026-03-30",
+    "source": "Indeed",
+    "status": "envoye",
+    "link": "https://to.indeed.com/aamjdf4kp9bc",
+    "notes": ""
+  },
+  {
+    "id": "mnbz32lj65jme2c1qup",
+    "company": "Crédit Agricole",
+    "position": "Alternance Support Utilisateurs & Habilitations F/H",
+    "date": "2026-03-29",
+    "source": "Indeed",
+    "status": "envoye",
+    "link": "https://to.indeed.com/aaypw4mnqxtr",
+    "notes": ""
   }
 ]
