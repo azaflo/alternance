@@ -1253,20 +1253,40 @@
 
   renderTable();
 
-  // Sync GitHub en arrière-plan
-  (async () => {
-    const remote = await loadFromGitHub();
-    if (remote !== null) {
-      const merged = mergeEntries(entries, remote);
-      const hasLocalChanges = JSON.stringify(merged) !== JSON.stringify(remote);
-      if (JSON.stringify(merged) !== JSON.stringify(entries)) {
-        entries = merged;
-        saveLocal(entries);
-        renderTable();
+  // ── Auto-sync ────────────────────────────────────────────────────────────
+  // Fusionne les données distantes sans écraser les changements locaux.
+  // Retourne true si la table a été mise à jour.
+  let _syncing = false;
+  async function syncFromGitHub() {
+    if (_syncing) return;
+    _syncing = true;
+    try {
+      const remote = await loadFromGitHub();
+      if (remote !== null) {
+        const merged = mergeEntries(entries, remote);
+        const hasLocalChanges = JSON.stringify(merged) !== JSON.stringify(remote);
+        if (JSON.stringify(merged) !== JSON.stringify(entries)) {
+          entries = merged;
+          saveLocal(entries);
+          renderTable();
+        }
+        if (hasLocalChanges) saveToGitHub(entries);
       }
-      if (hasLocalChanges) saveToGitHub(entries);
+    } finally {
+      _syncing = false;
     }
-  })();
+  }
+
+  // Sync au chargement
+  syncFromGitHub();
+
+  // Sync automatique toutes les 2 minutes
+  setInterval(syncFromGitHub, 2 * 60 * 1000);
+
+  // Sync immédiate quand l'onglet redevient visible (ex: retour sur l'appareil)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') syncFromGitHub();
+  });
 
   // ══════════════════════════════════════════════════════════════════════════
   // OFFRES INDEED — injectées ci-dessous
