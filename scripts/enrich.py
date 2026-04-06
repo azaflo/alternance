@@ -322,18 +322,19 @@ def find_linkedin_profiles(
         print("  ⚠  Aucune clé de recherche (SERPER_API_KEY ou SERPAPI_KEY)")
         return []
 
-    # 1 seule requête par offre pour économiser les crédits :
-    # on prend la plus précise disponible (recruteur > précis > large)
     queries = _build_queries(company, city, dept, recruiter_first, recruiter_last)
     labels  = ["recruteur", "précis", "intermédiaire", "large"]
-    query   = queries[0]
-    label   = labels[0] if queries else "large"
-    print(f"  🔍 [{label}] {query[:85]}...")
 
-    profiles = _search_profiles(query, MAX_CONTACTS + 2)
-    if profiles:
-        print(f"  ✔  {len(profiles)} profil(s) trouvé(s)")
-        return profiles[:MAX_CONTACTS]
+    for i, query in enumerate(queries):
+        label = labels[i] if i < len(labels) else "large"
+        print(f"  🔍 [{label}] {query[:85]}...")
+
+        profiles = _search_profiles(query, MAX_CONTACTS + 2)
+        if profiles:
+            print(f"  ✔  {len(profiles)} profil(s) trouvé(s)")
+            return profiles[:MAX_CONTACTS]
+
+        time.sleep(DELAY)
 
     print("  ✗  Aucun profil LinkedIn trouvé")
     return []
