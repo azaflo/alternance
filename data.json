@@ -277,16 +277,6 @@
       "careerUrl": "https://recrutement.ca-paris.fr/",
       "location": "Brunoy (91) · ~30 km",
       "offerId": "ca-support"
-    },
-    {
-      "id": "mncvpk4jyncbftbhrm9",
-      "company": "Crédit Agricole",
-      "position": "Alternance sécurité informatique SOC F/H",
-      "date": "2026-03-30",
-      "source": "Indeed",
-      "status": "envoye",
-      "link": "https://to.indeed.com/aamjdf4kp9bc",
-      "notes": ""
     }
   ],
   "deleted": {
@@ -294,6 +284,7 @@
     "mnh63qu4nx2n6lfwff": 1775434905489,
     "mnhhghkz6z7qn648q56": 1775434908688,
     "mnhhhybo56ku6dercnr": 1775434915894,
-    "mnda7bx463vm5gc6tzr": 1775434919171
+    "mnda7bx463vm5gc6tzr": 1775434919171,
+    "mncvpk4jyncbftbhrm9": 1775434937828
   }
 }
