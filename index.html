@@ -1238,9 +1238,19 @@
     Object.keys(offersBySource).forEach(src => renderOffersForSource(src));
   }
 
+  function getDistanceKm(offer) {
+    const m = (offer.location || '').match(/~(\d+)\s*km/);
+    return m ? parseInt(m[1], 10) : 0;
+  }
+
   window.injectOffers = function(source, offers) {
-    offersBySource[source] = offers;
-    offers.forEach(o => {
+    // Filtre : 35km max, fallback 45km si aucune offre dans le rayon principal
+    const within35 = offers.filter(o => getDistanceKm(o) <= 35);
+    const within45 = offers.filter(o => getDistanceKm(o) <= 45);
+    const filtered = within35.length > 0 ? within35 : within45;
+
+    offersBySource[source] = filtered;
+    filtered.forEach(o => {
       offersCache[o.id] = o;
       if (o.coverLetter) {
         offerLetters[o.id] = {
