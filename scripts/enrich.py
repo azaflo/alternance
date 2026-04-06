@@ -92,12 +92,16 @@ def parse_offers(html: str) -> list[dict]:
             m = re.search(rf'{key}:\s*["\']([^"\']+)["\']', src)
             return m.group(1).strip() if m else None
 
-        company  = field("company")
-        title    = field("title")
-        location = field("location")
-        url           = field("url",          window_large)
-        career_url    = field("careerUrl",    window_large)
+        company        = field("company")
+        title          = field("title")
+        location       = field("location")
+        url            = field("url",           window_large)
+        career_url     = field("careerUrl",     window_large)
         recruiter_name = field("recruiterName", window_large)
+        hr_email       = field("hrEmail",       window_large)
+
+        # hrContacts : présent si le champ existe dans la fenêtre
+        has_hr_contacts = bool(re.search(r"hrContacts:\s*\[", window_large))
 
         if not company:
             continue
@@ -110,15 +114,17 @@ def parse_offers(html: str) -> list[dict]:
                 city = m.group(1).strip()
 
         offers.append({
-            "id":            oid,
-            "company":       company,
-            "title":         title or "",
-            "location":      location or "",
-            "city":          city,
-            "department":    _detect_department(title or ""),
-            "url":           url,
-            "career_url":    career_url,
-            "recruiter_name": recruiter_name,  # renseigné manuellement dans l'offre
+            "id":              oid,
+            "company":         company,
+            "title":           title or "",
+            "location":        location or "",
+            "city":            city,
+            "department":      _detect_department(title or ""),
+            "url":             url,
+            "career_url":      career_url,
+            "recruiter_name":  recruiter_name,
+            "hr_email":        hr_email,
+            "has_hr_contacts": has_hr_contacts,
         })
 
     return offers
@@ -316,19 +322,18 @@ def find_linkedin_profiles(
         print("  ⚠  Aucune clé de recherche (SERPER_API_KEY ou SERPAPI_KEY)")
         return []
 
+    # 1 seule requête par offre pour économiser les crédits :
+    # on prend la plus précise disponible (recruteur > précis > large)
     queries = _build_queries(company, city, dept, recruiter_first, recruiter_last)
     labels  = ["recruteur", "précis", "intermédiaire", "large"]
+    query   = queries[0]
+    label   = labels[0] if queries else "large"
+    print(f"  🔍 [{label}] {query[:85]}...")
 
-    for i, query in enumerate(queries):
-        label = labels[i] if i < len(labels) else "large"
-        print(f"  🔍 [{label}] {query[:85]}...")
-
-        profiles = _search_profiles(query, MAX_CONTACTS + 2)
-        if profiles:
-            print(f"  ✔  {len(profiles)} profil(s) trouvé(s)")
-            return profiles[:MAX_CONTACTS]
-
-        time.sleep(DELAY)
+    profiles = _search_profiles(query, MAX_CONTACTS + 2)
+    if profiles:
+        print(f"  ✔  {len(profiles)} profil(s) trouvé(s)")
+        return profiles[:MAX_CONTACTS]
 
     print("  ✗  Aucun profil LinkedIn trouvé")
     return []
@@ -611,6 +616,11 @@ def run():
 
         print(f"▶ {comp}  [{oid}]")
         print(f"  📍 {city or '?'}  |  🗂  {dept or 'service non détecté'}")
+
+        # Skip si déjà enrichi (hrEmail ou hrContacts présents dans index.html)
+        if offer.get("hr_email") or offer.get("has_hr_contacts"):
+            print(f"  ⏭  Déjà enrichi, skip\n")
+            continue
 
         # Étape A — Nom du recruteur : champ manuel > scraping de la page
         manual_name = offer.get("recruiter_name")
