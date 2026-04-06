@@ -100,8 +100,8 @@ def parse_offers(html: str) -> list[dict]:
         recruiter_name = field("recruiterName", window_large)
         hr_email       = field("hrEmail",       window_large)
 
-        # hrContacts : présent si le champ existe dans la fenêtre
-        has_hr_contacts = bool(re.search(r"hrContacts:\s*\[", window_large))
+        # hrContacts : au moins un linkedin non vide dans le tableau
+        has_hr_contacts = bool(re.search(r'hrContacts:\s*\[.*?linkedin:\s*"https?://[^"]+', window_large, re.DOTALL))
 
         if not company:
             continue
@@ -627,9 +627,9 @@ def run():
         print(f"▶ {comp}  [{oid}]")
         print(f"  📍 {city or '?'}  |  🗂  {dept or 'service non détecté'}")
 
-        # Skip si déjà enrichi (hrEmail ou hrContacts présents dans index.html)
+        # Skip si hrEmail non vide OU au moins un linkedin non vide dans hrContacts
         if offer.get("hr_email") or offer.get("has_hr_contacts"):
-            print(f"  ⏭  Déjà enrichi, skip\n")
+            print(f"  ⏭  Déjà enrichi (email ou LinkedIn présent), skip\n")
             continue
 
         # Étape A — Nom du recruteur : champ manuel > scraping de la page
