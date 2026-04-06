@@ -673,11 +673,13 @@
     setSyncStatus('syncing');
     try {
       const res = await ghFetch(GH_FILE);
-      if (res.status === 404) { setSyncStatus('ok'); return []; }
+      if (res.status === 404) { setSyncStatus('ok'); return { entries: [], deleted: {} }; }
       if (!res.ok) { setSyncStatus('error'); return null; }
       const data = await res.json();
       const content = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
       setSyncStatus('ok');
+      // Rétrocompatibilité : ancien format = tableau simple
+      if (Array.isArray(content)) return { entries: content, deleted: {} };
       return content;
     } catch (e) {
       if (e.message === 'no-token') { setSyncStatus('notoken'); return null; }
@@ -699,7 +701,8 @@
         sha = existing.sha;
       }
 
-      const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+      const payload = { entries: data, deleted: getDeletedIds() };
+      const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
       const body = {
         message: `update: candidatures ${new Date().toLocaleDateString('fr-FR')}`,
         content
@@ -745,15 +748,24 @@
     localStorage.setItem(DELETED_KEY, JSON.stringify(deleted));
   }
 
-  function mergeEntries(local, remote) {
-    const deleted = getDeletedIds();
+  function mergeDeletedIds(localDeleted, remoteDeleted) {
+    // Union des deux listes, on garde le timestamp le plus récent
+    const merged = { ...localDeleted };
+    for (const [id, ts] of Object.entries(remoteDeleted)) {
+      if (!merged[id] || ts > merged[id]) merged[id] = ts;
+    }
+    localStorage.setItem(DELETED_KEY, JSON.stringify(merged));
+    return merged;
+  }
+
+  function mergeEntries(local, remote, remoteDeleted = {}) {
+    const deleted = mergeDeletedIds(getDeletedIds(), remoteDeleted);
     const merged = new Map();
-    // Remote en base, mais on ignore les IDs supprimés localement
     for (const e of remote) {
       if (!deleted[e.id]) merged.set(e.id, e);
     }
     for (const e of local) {
-      if (deleted[e.id]) continue;  // entrée supprimée → jamais réinjectée
+      if (deleted[e.id]) continue;
       if (!merged.has(e.id)) {
         merged.set(e.id, e);
       } else {
@@ -814,8 +826,8 @@
     closeSettings();
     const remote = await loadFromGitHub();
     if (remote !== null) {
-      const merged = mergeEntries(entries, remote);
-      const hasLocalChanges = JSON.stringify(merged) !== JSON.stringify(remote);
+      const merged = mergeEntries(entries, remote.entries, remote.deleted);
+      const hasLocalChanges = JSON.stringify(merged) !== JSON.stringify(remote.entries);
       entries = merged;
       saveLocal(entries);
       renderTable();
@@ -1280,8 +1292,8 @@
     try {
       const remote = await loadFromGitHub();
       if (remote !== null) {
-        const merged = mergeEntries(entries, remote);
-        const hasLocalChanges = JSON.stringify(merged) !== JSON.stringify(remote);
+        const merged = mergeEntries(entries, remote.entries, remote.deleted);
+        const hasLocalChanges = JSON.stringify(merged) !== JSON.stringify(remote.entries);
         if (JSON.stringify(merged) !== JSON.stringify(entries)) {
           entries = merged;
           saveLocal(entries);
