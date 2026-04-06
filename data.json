@@ -1,16 +1,6 @@
 {
   "entries": [
     {
-      "id": "mnhhhybo56ku6dercnr",
-      "company": "Equans",
-      "position": "Alternance – Ingénieur logiciel et SI F/H",
-      "date": "2026-04-02",
-      "source": "Indeed",
-      "status": "envoye",
-      "link": "https://to.indeed.com/aab7wkgzsm9n",
-      "notes": ""
-    },
-    {
       "id": "mnhotknui5lt34wonpq",
       "company": "Covivio",
       "position": "Alternance – Technicien(ne) Systèmes et Réseaux H/F",
@@ -312,6 +302,7 @@
   "deleted": {
     "mnbz32lj65jme2c1qup": 1775434899446,
     "mnh63qu4nx2n6lfwff": 1775434905489,
-    "mnhhghkz6z7qn648q56": 1775434908688
+    "mnhhghkz6z7qn648q56": 1775434908688,
+    "mnhhhybo56ku6dercnr": 1775434915894
   }
 }
