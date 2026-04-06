@@ -633,6 +633,7 @@
   const GH_FILE      = 'data.json';
   const GH_TOKEN_KEY = 'gh_token';
   const STORAGE_KEY  = 'candidatures_v2';
+  const DELETED_KEY  = 'candidatures_deleted_v2';
   const SYNC_RETRIES = 3;
 
   const getToken = () => localStorage.getItem(GH_TOKEN_KEY) || '';
@@ -733,15 +734,29 @@
   // MERGE — last write wins par entrée (basé sur updatedAt)
   // ══════════════════════════════════════════════════════════════════════════
 
+  function getDeletedIds() {
+    try { return JSON.parse(localStorage.getItem(DELETED_KEY)) || {}; }
+    catch { return {}; }
+  }
+
+  function markDeleted(id) {
+    const deleted = getDeletedIds();
+    deleted[id] = Date.now();
+    localStorage.setItem(DELETED_KEY, JSON.stringify(deleted));
+  }
+
   function mergeEntries(local, remote) {
+    const deleted = getDeletedIds();
     const merged = new Map();
-    for (const e of remote) merged.set(e.id, e);
+    // Remote en base, mais on ignore les IDs supprimés localement
+    for (const e of remote) {
+      if (!deleted[e.id]) merged.set(e.id, e);
+    }
     for (const e of local) {
+      if (deleted[e.id]) continue;  // entrée supprimée → jamais réinjectée
       if (!merged.has(e.id)) {
-        // Entrée locale uniquement (ajoutée hors-ligne) → on garde
         merged.set(e.id, e);
       } else {
-        // Conflit : on prend la version avec updatedAt le plus récent
         const rem = merged.get(e.id);
         if ((e.updatedAt || 0) > (rem.updatedAt || 0)) {
           merged.set(e.id, e);
@@ -1115,6 +1130,7 @@
 
   function deleteEntry(id) {
     if (!confirm('Supprimer cette candidature ?')) return;
+    markDeleted(id);
     entries = entries.filter(x => x.id !== id);
     save(entries);
     renderTable();
