@@ -1244,10 +1244,8 @@
   }
 
   window.injectOffers = function(source, offers) {
-    // Filtre : 35km max, fallback 45km si aucune offre dans le rayon principal
-    const within35 = offers.filter(o => getDistanceKm(o) <= 35);
-    const within45 = offers.filter(o => getDistanceKm(o) <= 45);
-    const filtered = within35.length > 0 ? within35 : within45;
+    // Filtre : 45km max (rien au-dessus)
+    const filtered = offers.filter(o => getDistanceKm(o) <= 45);
 
     offersBySource[source] = filtered;
     filtered.forEach(o => {
