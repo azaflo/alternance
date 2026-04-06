@@ -24,6 +24,7 @@ def remove_accents(s):
 
 # ── Config ─────────────────────────────────────────────────────────────────
 HUNTER_KEY   = os.getenv("HUNTER_API_KEY", "")
+SERPER_KEY   = os.getenv("SERPER_API_KEY", "")
 SERPAPI_KEY  = os.getenv("SERPAPI_KEY", "")
 HTML_FILE    = "index.html"
 DATA_FILE    = "data.json"
@@ -242,6 +243,56 @@ def _build_queries(
     return unique
 
 
+def _search_profiles(query: str, count: int) -> list[str]:
+    """
+    Exécute une requête Google et retourne les URLs LinkedIn trouvées.
+    Utilise Serper.dev en priorité, SerpApi en fallback.
+    """
+    if SERPER_KEY:
+        try:
+            r = requests.post(
+                "https://google.serper.dev/search",
+                headers={"X-API-KEY": SERPER_KEY, "Content-Type": "application/json"},
+                json={"q": query, "gl": "fr", "hl": "fr", "num": count},
+                timeout=15,
+            )
+            r.raise_for_status()
+            results = r.json().get("organic", [])
+            profiles = []
+            seen = set()
+            for res in results:
+                url = res.get("link", "")
+                if "linkedin.com/in/" in url and url not in seen:
+                    seen.add(url)
+                    profiles.append(url)
+            return profiles
+        except Exception as e:
+            print(f"  ✗  Serper : {e}")
+
+    if SERPAPI_KEY:
+        try:
+            r = requests.get(
+                "https://serpapi.com/search",
+                params={"engine": "google", "q": query, "api_key": SERPAPI_KEY,
+                        "num": count, "gl": "fr", "hl": "fr"},
+                timeout=15,
+            )
+            r.raise_for_status()
+            results = r.json().get("organic_results", [])
+            profiles = []
+            seen = set()
+            for res in results:
+                url = res.get("link", "")
+                if "linkedin.com/in/" in url and url not in seen:
+                    seen.add(url)
+                    profiles.append(url)
+            return profiles
+        except Exception as e:
+            print(f"  ✗  SerpApi : {e}")
+
+    return []
+
+
 def find_linkedin_profiles(
     company: str,
     city: str | None,
@@ -253,8 +304,8 @@ def find_linkedin_profiles(
     Retourne jusqu'à MAX_CONTACTS URLs LinkedIn.
     Essaie chaque requête en cascade et s'arrête au premier succès.
     """
-    if not SERPAPI_KEY:
-        print("  ⚠  SERPAPI_KEY manquante")
+    if not SERPER_KEY and not SERPAPI_KEY:
+        print("  ⚠  Aucune clé de recherche (SERPER_API_KEY ou SERPAPI_KEY)")
         return []
 
     queries = _build_queries(company, city, dept, recruiter_first, recruiter_last)
@@ -264,34 +315,10 @@ def find_linkedin_profiles(
         label = labels[i] if i < len(labels) else "large"
         print(f"  🔍 [{label}] {query[:85]}...")
 
-        params = {
-            "engine":  "google",
-            "q":       query,
-            "api_key": SERPAPI_KEY,
-            "num":     MAX_CONTACTS + 2,
-            "gl":      "fr",
-            "hl":      "fr",
-        }
-
-        try:
-            r = requests.get("https://serpapi.com/search", params=params, timeout=15)
-            r.raise_for_status()
-            results = r.json().get("organic_results", [])
-
-            profiles = []
-            seen = set()
-            for res in results:
-                url = res.get("link", "")
-                if "linkedin.com/in/" in url and url not in seen:
-                    seen.add(url)
-                    profiles.append(url)
-
-            if profiles:
-                print(f"  ✔  {len(profiles)} profil(s) trouvé(s)")
-                return profiles[:MAX_CONTACTS]
-
-        except Exception as e:
-            print(f"  ✗  SerpApi : {e}")
+        profiles = _search_profiles(query, MAX_CONTACTS + 2)
+        if profiles:
+            print(f"  ✔  {len(profiles)} profil(s) trouvé(s)")
+            return profiles[:MAX_CONTACTS]
 
         time.sleep(DELAY)
 
