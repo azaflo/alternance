@@ -541,13 +541,21 @@ def sync_data_json(offer_contacts: dict[str, list[dict]]) -> None:
 
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
-            entries = json.load(f)
+            raw = json.load(f)
     except Exception as e:
         print(f"  ✗  Lecture data.json : {e}")
         return
 
+    # data.json peut être un tableau simple (ancien format) ou {entries, deleted}
+    entries = raw.get("entries", raw) if isinstance(raw, dict) else raw
+    if not isinstance(entries, list):
+        print(f"  ✗  Format data.json inattendu : {type(entries).__name__}")
+        return
+
     updated = 0
     for entry in entries:
+        if not isinstance(entry, dict):
+            continue
         offer_id = entry.get("offerId")
         if not offer_id or offer_id not in offer_contacts:
             continue
@@ -575,8 +583,10 @@ def sync_data_json(offer_contacts: dict[str, list[dict]]) -> None:
         return
 
     try:
+        # Réécrire en conservant le format d'origine
+        output = raw if isinstance(raw, list) else {**raw, "entries": entries}
         with open(DATA_FILE, "w", encoding="utf-8") as f:
-            json.dump(entries, f, ensure_ascii=False, indent=2)
+            json.dump(output, f, ensure_ascii=False, indent=2)
         print(f"  ✅ {updated} candidature(s) mise(s) à jour dans {DATA_FILE}")
     except Exception as e:
         print(f"  ✗  Écriture data.json : {e}")
