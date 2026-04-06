@@ -21,16 +21,6 @@
       "notes": ""
     },
     {
-      "id": "mnh63qu4nx2n6lfwff",
-      "company": "NRJ Audio (NRJ Group)",
-      "position": "ALTERNANT Technicien Support Informatique H/F/NB",
-      "date": "2026-04-02",
-      "source": "Site entreprise",
-      "status": "envoye",
-      "link": "https://to.indeed.com/aag462vc7jpd",
-      "notes": ""
-    },
-    {
       "id": "mnhotknui5lt34wonpq",
       "company": "Covivio",
       "position": "Alternance – Technicien(ne) Systèmes et Réseaux H/F",
@@ -330,6 +320,7 @@
     }
   ],
   "deleted": {
-    "mnbz32lj65jme2c1qup": 1775434899446
+    "mnbz32lj65jme2c1qup": 1775434899446,
+    "mnh63qu4nx2n6lfwff": 1775434905489
   }
 }
