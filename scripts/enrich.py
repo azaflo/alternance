@@ -257,7 +257,11 @@ def _search_profiles(query: str, count: int) -> list[str]:
                 timeout=15,
             )
             r.raise_for_status()
-            results = r.json().get("organic", [])
+            payload = r.json()
+            if not isinstance(payload, dict):
+                print(f"  ✗  Serper : réponse inattendue ({type(payload).__name__}) : {str(payload)[:120]}")
+                return []
+            results = payload.get("organic", [])
             profiles = []
             seen = set()
             for res in results:
@@ -278,7 +282,11 @@ def _search_profiles(query: str, count: int) -> list[str]:
                 timeout=15,
             )
             r.raise_for_status()
-            results = r.json().get("organic_results", [])
+            payload = r.json()
+            if not isinstance(payload, dict):
+                print(f"  ✗  SerpApi : réponse inattendue ({type(payload).__name__}) : {str(payload)[:120]}")
+                return []
+            results = payload.get("organic_results", [])
             profiles = []
             seen = set()
             for res in results:
@@ -374,7 +382,11 @@ def _find_domain(company: str) -> str | None:
             params={"company": company, "api_key": HUNTER_KEY},
             timeout=10,
         )
-        domain = r.json().get("data", {}).get("domain")
+        payload = r.json()
+        if not isinstance(payload, dict):
+            print(f"     ✗  Hunter domain-search : réponse inattendue ({type(payload).__name__}) : {str(payload)[:120]}")
+            return None
+        domain = payload.get("data", {}).get("domain")
         if domain:
             if _domain_matches_company(domain, company):
                 print(f"     🌐 Domaine : {domain}")
@@ -400,7 +412,11 @@ def _find_email(first: str, last: str, domain: str) -> str | None:
             },
             timeout=10,
         )
-        data  = r.json().get("data", {})
+        payload = r.json()
+        if not isinstance(payload, dict):
+            print(f"     ✗  Hunter email-finder : réponse inattendue ({type(payload).__name__}) : {str(payload)[:120]}")
+            return None
+        data  = payload.get("data", {})
         email = data.get("email")
         score = data.get("score", 0)
         if email and score >= 50:
