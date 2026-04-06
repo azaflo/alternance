@@ -764,11 +764,12 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }
 
+  let _pendingSave = false;
+
   function save(data) {
-    // ✅ Sauvegarde locale IMMÉDIATE (même si GitHub plante)
     saveLocal(data);
-    // Puis sync GitHub en arrière-plan (avec retry)
-    saveToGitHub(data);
+    _pendingSave = true;
+    saveToGitHub(data).finally(() => { _pendingSave = false; });
   }
 
   let entries = loadLocal();
@@ -1258,7 +1259,7 @@
   // Retourne true si la table a été mise à jour.
   let _syncing = false;
   async function syncFromGitHub() {
-    if (_syncing) return;
+    if (_syncing || _pendingSave) return;
     _syncing = true;
     try {
       const remote = await loadFromGitHub();
