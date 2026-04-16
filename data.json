@@ -159,7 +159,7 @@
       "position": "Alternance – Technicien maintenance Sûreté F/H",
       "date": "2026-04-02",
       "source": "Indeed",
-      "status": "envoye",
+      "status": "refuse",
       "link": "https://to.indeed.com/aal27nrlc8sv",
       "notes": "",
       "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je suis à la recherche d'un contrat d'apprentissage dans le cadre de ma Licence Générale Informatique spécialité Cybersécurité. Votre offre d'alternance pour le poste de Technicien Maintenance Sûreté au sein d'Equans à Lieusaint a retenu mon attention.\n\nLes systèmes de sûreté modernes — contrôle d'accès, vidéosurveillance IP, supervision — reposent de plus en plus sur des architectures réseau et des protocoles informatiques. C'est précisément à cette convergence entre sécurité physique et cybersécurité que je souhaite contribuer, en mobilisant les compétences acquises dans ma formation SISR.\n\nMes études m'ont permis de maîtriser l'administration des réseaux (TCP/IP, VLAN, commutation), la supervision d'équipements via SNMP, ainsi que la maintenance de systèmes informatiques. Je suis également sensibilisé aux enjeux de sécurisation des accès réseau et à la protection des équipements connectés.\n\nJe serais très heureux de vous rencontrer pour vous présenter ma motivation et mes compétences.\n\nVeuillez agréer, Madame, Monsieur, mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
@@ -177,7 +177,8 @@
       ],
       "careerUrl": "https://www.equans.fr/candidatez",
       "location": "Lieusaint (77) · ~7 km",
-      "offerId": "equans-surete-lieusaint"
+      "offerId": "equans-surete-lieusaint",
+      "updatedAt": 1776331582145
     },
     {
       "id": "mnhoq8vebsvvp5qemj7",
