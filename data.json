@@ -32,7 +32,7 @@
       "position": "Alternance – Technicien Systèmes de Sûreté F/H",
       "date": "2026-04-02",
       "source": "Indeed",
-      "status": "envoye",
+      "status": "refuse",
       "link": "https://to.indeed.com/aawpx64qc6gw",
       "notes": "",
       "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je recherche un contrat d'apprentissage pour préparer ma Licence Générale Informatique spécialité Cybersécurité. Votre offre d'alternance pour le poste de Technicien Systèmes de Sûreté au sein d'Equans à Bonneuil-sur-Marne correspond à un domaine qui m'attire par son aspect technique et sa dimension sécuritaire.\n\nL'intégration et la maintenance de systèmes de sûreté connectés (contrôle d'accès, détection intrusion, vidéoprotection IP) nécessite des compétences réseaux et systèmes que ma formation en BTS SIO SISR m'a précisément permis de développer. Je vois dans ce poste une excellente opportunité d'appliquer mes connaissances dans un environnement opérationnel concret chez un acteur majeur des services multi-techniques.\n\nDurant ma formation, j'ai acquis des compétences en câblage réseau, configuration d'équipements IP, supervision d'infrastructures, ainsi qu'une approche rigoureuse du diagnostic et de la maintenance des systèmes. Je suis à l'aise aussi bien sur le terrain qu'en environnement informatique.\n\nDans l'attente de vous rencontrer, je vous adresse mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
@@ -45,7 +45,8 @@
       ],
       "careerUrl": "https://www.equans.fr/candidatez",
       "location": "Bonneuil-sur-Marne (94) · ~38 km",
-      "offerId": "equans-surete-bonneuil"
+      "offerId": "equans-surete-bonneuil",
+      "updatedAt": 1776331625283
     },
     {
       "id": "mnhosopqpbep1z77b0e",
