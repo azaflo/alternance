@@ -674,6 +674,7 @@
     try {
       const res = await ghFetch(GH_FILE);
       if (res.status === 404) { setSyncStatus('ok'); return { entries: [], deleted: {} }; }
+      if (res.status === 401 || res.status === 403) { setSyncStatus('error'); return null; }
       if (!res.ok) { setSyncStatus('error'); return null; }
       const data = await res.json();
       const content = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
