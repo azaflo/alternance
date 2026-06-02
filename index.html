@@ -1248,7 +1248,10 @@
     // Filtre : 45km max (rien au-dessus)
     const filtered = offers.filter(o => getDistanceKm(o) <= 45);
 
-    offersBySource[source] = filtered;
+    // Fusion avec déduplication par ID (plusieurs appels injectOffers s'accumulent)
+    const existing = offersBySource[source] || [];
+    const existingIds = new Set(existing.map(o => o.id));
+    offersBySource[source] = [...existing, ...filtered.filter(o => !existingIds.has(o.id))];
     filtered.forEach(o => {
       offersCache[o.id] = o;
       if (o.coverLetter) {
