@@ -446,7 +446,7 @@ def name_from_linkedin_url(url: str):
     try:
         slug = url.rstrip("/").split("/in/")[-1]
         slug = unquote(slug)
-        slug = re.sub(r"-[a-z0-9]{4,}$", "", slug)
+        slug = re.sub(r"-[a-z0-9]*[0-9][a-z0-9]*$", "", slug)
         parts = [p for p in slug.split("-") if p and not p.isdigit()]
         if len(parts) >= 2:
             return parts[0].capitalize(), parts[1].capitalize()
@@ -495,9 +495,10 @@ def inject_contacts(html: str, offer_id: str, contacts: list[dict]) -> str:
 
     id_pos = m.start()
 
-    # hrEmail ← email du 1er contact (pour mailto)
+    # hrEmail ← email du 1er contact (pour mailto), seulement si non vide
     first_email = contacts[0]["email"]
-    html = _replace_or_insert_field(html, id_pos, "hrEmail", f'"{first_email}"')
+    if first_email:
+        html = _replace_or_insert_field(html, id_pos, "hrEmail", f'"{first_email}"')
 
     # hrContacts ← tous les contacts (LinkedIn conservé pour chacun)
     m2 = re.search(rf"id:\s*['\"]({re.escape(offer_id)})['\"]", html)
@@ -570,12 +571,12 @@ def sync_data_json(offer_contacts: dict[str, list[dict]]) -> None:
         if first_contact.get("email"):
             entry["hrEmail"] = first_contact["email"]
 
-        extra = [
+        # Tous les contacts dans hrContacts (comme inject_contacts pour index.html)
+        all_contacts = [
             {"name": c["name"], "email": c["email"], "linkedin": c.get("linkedin", "")}
-            for c in contacts[1:]
+            for c in contacts
         ]
-        if extra:
-            entry["hrContacts"] = extra
+        entry["hrContacts"] = all_contacts
 
         updated += 1
 
@@ -628,9 +629,9 @@ def run():
         print(f"▶ {comp}  [{oid}]")
         print(f"  📍 {city or '?'}  |  🗂  {dept or 'service non détecté'}")
 
-        # Skip si hrEmail non vide OU au moins un linkedin non vide dans hrContacts
-        if offer.get("hr_email") or offer.get("has_hr_contacts"):
-            print(f"  ⏭  Déjà enrichi (email ou LinkedIn présent), skip\n")
+        # Skip uniquement si hrEmail est déjà renseigné (pas juste un LinkedIn sans email)
+        if offer.get("hr_email"):
+            print(f"  ⏭  Déjà enrichi (email présent), skip\n")
             continue
 
         # Étape A — Nom du recruteur : champ manuel > scraping de la page
