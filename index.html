@@ -1245,8 +1245,8 @@
   }
 
   window.injectOffers = function(source, offers) {
-    // Filtre : 50km max
-    const filtered = offers.filter(o => getDistanceKm(o) <= 50);
+    // Filtre : 45km max (rien au-dessus)
+    const filtered = offers.filter(o => getDistanceKm(o) <= 45);
 
     // Fusion avec déduplication par ID (plusieurs appels injectOffers s'accumulent)
     const existing = offersBySource[source] || [];
