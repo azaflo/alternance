@@ -1,6 +1,33 @@
 {
   "entries": [
     {
+      "id": "mq59cn35dv9ca8xz6gs",
+      "company": "CPAM de la Seine-et-Marne",
+      "position": "Alternant Technicien Infrastructures Matériel Logiciels H/F",
+      "date": "2026-06-08",
+      "source": "Indeed",
+      "status": "envoye",
+      "link": "https://to.indeed.com/aakdx8bvjl7t",
+      "notes": "envoyé un mail le 10 juin",
+      "updatedAt": 1780925988065,
+      "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je recherche un contrat d'apprentissage pour préparer ma Licence Générale Informatique spécialité Cybersécurité à la rentrée 2026. Votre offre d'alternance pour le poste d'Alternant Technicien Infrastructures Matériel Logiciels au sein de la CPAM de la Seine-et-Marne à Rubelles a retenu toute mon attention — vous recherchez un étudiant en BTS Informatique, curieux, débrouillard, passionné par l'environnement informatique, rigoureux et doté d'un bon sens du service, ce qui correspond exactement à mon profil et aux compétences développées tout au long de ma formation.\n\nRejoindre le département informatique de la CPAM de la Seine-et-Marne — réaliser les demandes de maintenance des matériels, garantir le fonctionnement des composants du système informatique, configurer, préparer et installer les matériels, réaliser les raccordements au réseau local, conseiller et assister les utilisateurs, apporter un diagnostic et résoudre les incidents de premier niveau, rédiger et diffuser des supports et instructions techniques, et faire des propositions sur l'amélioration des outils en place et le choix du matériel — représente un ensemble de missions polyvalentes et formatrices au sein d'une institution de protection sociale de premier plan, au service de 1,4 million de Seine-et-Marnais, avec des déplacements enrichissants sur l'ensemble des sites décentralisés de l'organisme.\n\nMa formation BTS SIO SISR m'a permis d'acquérir des bases solides en maintenance matérielle et logicielle, en installation et configuration d'équipements informatiques, en raccordements réseau, en support utilisateurs et diagnostic d'incidents de premier niveau, en rédaction de documentation technique, ainsi qu'en protocoles réseaux TCP/IP, DNS, DHCP. Titulaire du permis B, rigoureux, curieux et doté d'un bon sens du service, je suis pleinement motivé pour m'investir au sein de votre département informatique et contribuer au bon fonctionnement du parc informatique de la CPAM de la Seine-et-Marne.\n\nJe me tiens disponible pour un entretien à votre convenance.\n\nVeuillez agréer, Madame, Monsieur, l'expression de mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
+      "hrContacts": [
+        {
+          "name": "Jessica Iacobucci",
+          "email": "",
+          "linkedin": "https://fr.linkedin.com/in/jessica-iacobucci-87ab322ab"
+        },
+        {
+          "name": "Fabienne Garnier",
+          "email": "",
+          "linkedin": "https://fr.linkedin.com/in/fabienne-garnier-b98a52a8"
+        }
+      ],
+      "careerUrl": "https://jobaffinity.fr/apply/2mw4avqu8et7k6zlq5",
+      "location": "Rubelles / Melun (77) · ~18 km",
+      "offerId": "cpam-seine-et-marne-alternant-technicien-infrastructures-rubelles"
+    },
+    {
       "id": "mq58jzq0yo8ei1ll1fd",
       "company": "VINCI Construction – SOLUMAT",
       "position": "Apprenti informatique / Support SI F/H",
