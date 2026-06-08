@@ -1,6 +1,38 @@
 {
   "entries": [
     {
+      "id": "mq58jzq0yo8ei1ll1fd",
+      "company": "VINCI Construction – SOLUMAT",
+      "position": "Apprenti informatique / Support SI F/H",
+      "date": "2026-06-08",
+      "source": "Indeed",
+      "status": "envoye",
+      "link": "https://to.indeed.com/aaglkv8lknhm",
+      "notes": "",
+      "updatedAt": 1780924651416,
+      "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je recherche un contrat d'apprentissage pour préparer ma Licence Générale Informatique spécialité Cybersécurité. Votre offre d'alternance pour le poste d'Apprenti informatique/Support SI au sein de SOLUMAT (Groupe VINCI Construction) à Marolles-en-Hurepoix a retenu toute mon attention — vous recherchez un étudiant curieux, rigoureux, à l'aise en support utilisateurs et en administration des systèmes d'information, avec une capacité d'apprentissage rapide, ce qui correspond précisément à mon profil et aux compétences développées tout au long de ma formation.\n\nRejoindre le service informatique de SOLUMAT — assurer le support informatique auprès des utilisateurs, participer à la gestion des postes de travail, logiciels et équipements, contribuer à l'administration et au suivi des applications, participer à la résolution d'incidents et au traitement des demandes, accompagner la mise en œuvre ou l'amélioration de projets informatiques et contribuer à la documentation et aux bonnes pratiques IT — représente un ensemble de missions polyvalentes et structurantes, au sein d'une société à taille humaine bénéficiant des ressources et de l'envergure d'un leader mondial de la construction.\n\nMa formation BTS SIO SISR m'a permis d'acquérir des bases solides en support utilisateurs N1/N2, en administration des systèmes Windows et Active Directory, en gestion des incidents via ticketing, en maintenance du parc informatique et en réseaux TCP/IP. Rigoureux, organisé, doté d'un bon sens du service et d'une curiosité technique naturelle, je suis pleinement motivé pour m'investir au sein de votre équipe et contribuer au maintien en conditions opérationnelles de vos systèmes.\n\nJe me tiens disponible pour un entretien à votre convenance.\n\nVeuillez agréer, Madame, Monsieur, l'expression de mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
+      "hrContacts": [
+        {
+          "name": "Michel Syrokvachine",
+          "email": "",
+          "linkedin": "https://fr.linkedin.com/in/michel-syrokvachine-942428223"
+        },
+        {
+          "name": "Elodie Autier",
+          "email": "",
+          "linkedin": "https://fr.linkedin.com/in/elodie-autier-1a722781"
+        },
+        {
+          "name": "Joaquim Do",
+          "email": "",
+          "linkedin": "https://fr.linkedin.com/in/joaquim-do-novo-54ab6811a"
+        }
+      ],
+      "careerUrl": "https://to.indeed.com/aaglkv8lknhm",
+      "location": "Marolles-en-Hurepoix (91) · ~15 km",
+      "offerId": "vinci-solumat-support-si-marolles"
+    },
+    {
       "id": "mq57mpc639hqli2cztn",
       "company": "RIVA Stahl GmbH (SAM Montereau)",
       "position": "SAM Montereau – Apprenti Administrateur Systèmes et Réseaux H/F",
