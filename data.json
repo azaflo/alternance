@@ -1,6 +1,28 @@
 {
   "entries": [
     {
+      "id": "mq57mpc639hqli2cztn",
+      "company": "RIVA Stahl GmbH (SAM Montereau)",
+      "position": "SAM Montereau – Apprenti Administrateur Systèmes et Réseaux H/F",
+      "date": "2026-06-08",
+      "source": "Indeed",
+      "status": "envoye",
+      "link": "https://to.indeed.com/aarz4w82yncc",
+      "notes": "envoyé mail 10 juin",
+      "updatedAt": 1780923098310,
+      "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je recherche un contrat d'apprentissage pour préparer ma Licence Générale Informatique spécialité Cybersécurité. Votre offre d'alternance pour le poste d'Apprenti Administrateur Systèmes et Réseaux au sein de SAM Montereau (Groupe Riva) à Montereau-Fault-Yonne a retenu toute mon attention — vous recherchez un étudiant préparant un BTS Informatique, rigoureux et organisé, avec des connaissances en administration systèmes, réseaux et Active Directory, ce qui correspond exactement à mon profil et à ma formation.\n\nRejoindre le service informatique de SAM Montereau — assister les utilisateurs et les automaticiens (hotline), gérer les tickets informatiques via l'outil de ticketing, apporter un soutien dans la résolution des incidents réseau et systèmes, suivre les prestataires et participer à leurs interventions, contribuer à la gestion et à la maintenance des infrastructures systèmes, participer au déploiement et à la modernisation des équipements réseaux, surveiller l'état des infrastructures, participer à l'administration de l'Active Directory (création de comptes, gestion des accès) et rédiger la documentation technique — représente un ensemble de missions complètes et formatives, au sein d'un groupe industriel international solide reconnu pour son investissement dans la formation de ses alternants.\n\nMa formation BTS SIO SISR m'a permis d'acquérir des bases solides en administration Windows et Active Directory, en gestion des incidents via système de ticketing, en maintenance des infrastructures réseaux et systèmes, en protocoles TCP/IP, DNS, DHCP, ainsi qu'en rédaction de documentation technique. Rigoureux, curieux, organisé et à l'aise dans le travail en équipe, je suis pleinement motivé pour m'investir dans vos équipes et contribuer activement à la gestion et à l'évolution de votre infrastructure informatique.\n\nJe me tiens disponible pour un entretien à votre convenance.\n\nVeuillez agréer, Madame, Monsieur, l'expression de mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
+      "hrContacts": [
+        {
+          "name": "Akram Djellal",
+          "email": "",
+          "linkedin": "https://fr.linkedin.com/in/akram-djellal-3711828b"
+        }
+      ],
+      "careerUrl": "https://to.indeed.com/aarz4w82yncc",
+      "location": "Montereau-Fault-Yonne (77) · ~25 km",
+      "offerId": "riva-stahl-sam-montereau-admin-reseaux"
+    },
+    {
       "id": "mq56z42hqleb02n3hqr",
       "company": "AFM-Téléthon",
       "position": "Technicien Support Informatique – Alternance H/F",
