@@ -1,5 +1,17 @@
 {
-  "entries": [],
+  "entries": [
+    {
+      "id": "mq54uhnvvgmfjhzdr2m",
+      "company": "bwn",
+      "position": "APPRENTI TECHINICIEN",
+      "date": "2026-06-08",
+      "source": "Réseau",
+      "status": "envoye",
+      "link": "https://www.hellowork.com/fr-fr/emplois/78193504.html#postuler",
+      "notes": "Offre trouvé par Mme THOMAS",
+      "updatedAt": 1780918422763
+    }
+  ],
   "deleted": {
     "mnbz32lj65jme2c1qup": 1775434899446,
     "mnh63qu4nx2n6lfwff": 1775434905489,
