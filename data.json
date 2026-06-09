@@ -1,6 +1,29 @@
 {
   "entries": [
     {
+      "id": "mq6jit949k56hu99hhd",
+      "company": "Mairie de Juvisy-Sur-Orge",
+      "position": "Apprenti Technicien Informatique H/F",
+      "date": "2026-06-09",
+      "source": "Indeed",
+      "status": "envoye",
+      "link": "https://to.indeed.com/aavbtnytvq28",
+      "notes": "",
+      "updatedAt": 1781003538328,
+      "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je recherche un contrat d'apprentissage pour préparer ma Licence Générale Informatique spécialité Cybersécurité à la rentrée 2026. Votre offre d'alternance pour le poste d'Apprenti Technicien Informatique au sein de la Mairie de Juvisy-sur-Orge a retenu mon attention — vous recherchez un étudiant en formation informatique, rigoureux, organisé, doté d'un bon sens des relations humaines et capable d'accompagner les utilisateurs tout en gérant les incidents informatiques, ce qui correspond précisément à mon profil et aux compétences développées tout au long de ma formation.\n\nRejoindre le service informatique de la Mairie de Juvisy-sur-Orge — accompagner les agents dans leur apprentissage des outils informatiques et des logiciels métiers, rédiger des supports utilisateurs, assurer l'interface entre les éditeurs des solutions progicielles et les utilisateurs, installer et configurer les logiciels métiers dans l'environnement de travail, assurer les mises à jour des applications, identifier les causes de dysfonctionnements et pannes, réaliser les interventions de premier niveau, ainsi qu'assurer l'installation, la gestion et le suivi des équipements informatiques (inventaire, sécurisation des données) — représente une alternance complète et formatrice au cœur d'une collectivité territoriale au service des citoyens.\n\nMa formation BTS SIO SISR m'a permis d'acquérir des bases solides en support utilisateurs, en administration des systèmes Windows, en gestion des incidents et techniques de diagnostic, en environnements systèmes et protocoles de communication TCP/IP, DNS, DHCP, ainsi qu'en outils de supervision et de maintenance du parc informatique. Rigoureux, organisé, discret et doté d'un bon sens du relationnel, je suis pleinement motivé pour m'investir au sein de votre collectivité et apporter un soutien de qualité aux agents et aux services de la Mairie de Juvisy-sur-Orge.\n\nJe me tiens disponible pour un entretien à votre convenance.\n\nVeuillez agréer, Madame, Monsieur, l'expression de mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
+      "hrEmail": "recrutement@mairie-juvisy.fr",
+      "hrContacts": [
+        {
+          "name": "Service Recrutement Mairie",
+          "email": "recrutement@mairie-juvisy.fr",
+          "linkedin": ""
+        }
+      ],
+      "careerUrl": "https://to.indeed.com/aavbtnytvq28",
+      "location": "Juvisy-sur-Orge (91) · ~23 km",
+      "offerId": "mairie-juvisy-apprenti-technicien-91"
+    },
+    {
       "id": "mq6ejy1q4h6etg3pc2o",
       "company": "Docaposte",
       "position": "Administrateur Poste de Travail – Alternance F/H",
