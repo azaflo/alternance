@@ -1,6 +1,38 @@
 {
   "entries": [
     {
+      "id": "mqexzt7ohgfy1dqo0q8",
+      "company": "Safran Aerosystems",
+      "position": "Apprenti·e Technicien·ne Support Informatique F/H",
+      "date": "2026-06-15",
+      "source": "Indeed",
+      "status": "envoye",
+      "link": "https://to.indeed.com/aa88kpggj2gs",
+      "notes": "Trouvé le mail du responsable",
+      "updatedAt": 1781511575460,
+      "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je recherche un contrat d'apprentissage pour préparer ma Licence Générale Informatique spécialité Cybersécurité à la rentrée 2026. Votre offre d'alternance pour le poste d'Apprenti·e Technicien·ne Support Informatique au sein de Safran Aerosystems à Soignolles-en-Brie a retenu toute mon attention — vous recherchez un étudiant préparant une Licence (Bac+3) ou un Master (Bac+4) en informatique, doté d'un bon relationnel, rigoureux et organisé, avec des connaissances en Windows, réseaux et matériels IT, ce qui correspond exactement à mon profil et à ma formation BTS SIO SISR.\n\nRejoindre le service informatique de Safran Aerosystems sur le site de Soignolles-en-Brie — assurer des interventions sur site (présence planifiée, réparation, résolution d'incidents), assurer le support technique en qualifiant et en répondant aux demandes des utilisateurs (tous niveaux) et en effectuant des prises en main à distance, installer et gérer le parc informatique, préparer les postes et assurer la maintenance des PC et portables, suivre et élaborer des processus de traitement des incidents, gérer les équipements audio/vidéo des salles de réunion et assister l'équipe sur divers projets techniques (réseaux, câblage, configuration de routeurs) — représente un ensemble de missions complètes et formatrices au sein d'un groupe aéronautique de rang mondial (100 000 collaborateurs, 27,3 milliards d'euros de CA en 2024), classé 2ᵉ dans l'industrie aérospatiale et défense par le magazine TIME « World's best companies 2024 ».\n\nMa formation BTS SIO SISR m'a permis d'acquérir des bases solides en support utilisateurs N1/N2 et prise en main à distance, en administration Windows 10/11, en gestion de parc informatique et maintenance matérielle (PC, portables), en protocoles réseaux TCP/IP, DNS, DHCP ainsi qu'en notions de câblage réseau et configuration d'équipements actifs. Rigoureux, organisé, doté d'un bon relationnel et d'une réelle curiosité technique, je suis pleinement motivé pour m'investir au sein de votre service IT et contribuer au bon fonctionnement des infrastructures informatiques du site de Soignolles-en-Brie.\n\nJe me tiens disponible pour un entretien à votre convenance.\n\nVeuillez agréer, Madame, Monsieur, l'expression de mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
+      "hrContacts": [
+        {
+          "name": "Nicolas Fraysse",
+          "email": "",
+          "linkedin": "https://fr.linkedin.com/in/nicolas-fraysse"
+        },
+        {
+          "name": "Aileen Charles",
+          "email": "",
+          "linkedin": "https://fr.linkedin.com/in/aileen-charles-494000237"
+        },
+        {
+          "name": "Alison Etheve",
+          "email": "",
+          "linkedin": "https://fr.linkedin.com/in/alison-etheve-249951124"
+        }
+      ],
+      "careerUrl": "https://to.indeed.com/aa88kpggj2gs",
+      "location": "Soignolles-en-Brie (77) · ~25 km",
+      "offerId": "safran-technicien-support-soignolles-77"
+    },
+    {
       "id": "mq6kd9m8r73xhkch4b",
       "company": "CUBE",
       "position": "Apprenti technicien(ne) Systèmes & Réseaux Informatiques",
