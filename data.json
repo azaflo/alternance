@@ -109,17 +109,6 @@
       "updatedAt": 1781005294785
     },
     {
-      "id": "mq5b8qrqno8je4qou0b",
-      "company": "SAFRAN",
-      "position": "Apprenti.e Administrateur systèmes et réseaux",
-      "date": "2026-06-08",
-      "source": "Site entreprise",
-      "status": "refuse",
-      "link": "https://www.safran-group.com/fr/offres/france/colombes/apprentie-administrateur-systemes-reseaux-fh-174954",
-      "notes": "en attente site :",
-      "updatedAt": 1781008929000
-    },
-    {
       "id": "mq58jzq0yo8ei1ll1fd",
       "company": "VINCI Construction – SOLUMAT",
       "position": "Apprenti informatique / Support SI F/H",
@@ -242,6 +231,7 @@
     "mq6jgfct3nnnrbxeq7a": 1781003454087,
     "mq6jit949k56hu99hhd": 1781003542122,
     "mq59cn35dv9ca8xz6gs": 1781511585302,
-    "mqf1carrefour16juin": 1781782810013
+    "mqf1carrefour16juin": 1781782810013,
+    "mq5b8qrqno8je4qou0b": 1781782812886
   }
 }
