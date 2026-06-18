@@ -1,17 +1,6 @@
 {
   "entries": [
     {
-      "id": "mqjfh2aur7ilg8t5n2",
-      "company": "Schneider",
-      "position": "Technicien de support informatique F/H",
-      "date": "2026-06-18",
-      "source": "Autre",
-      "status": "envoye",
-      "link": "https://www.welcometothejungle.com/fr/companies/schneider-electric/jobs/alternance-technicien-de-support-informatique-f-h_ennery_SE_x49p6xJ",
-      "notes": "",
-      "updatedAt": 1781782798566
-    },
-    {
       "id": "mqexzt7ohgfy1dqo0q8",
       "company": "Safran Aerosystems",
       "position": "Apprenti·e Technicien·ne Support Informatique F/H",
@@ -232,6 +221,7 @@
     "mq6jit949k56hu99hhd": 1781003542122,
     "mq59cn35dv9ca8xz6gs": 1781511585302,
     "mqf1carrefour16juin": 1781782810013,
-    "mq5b8qrqno8je4qou0b": 1781782812886
+    "mq5b8qrqno8je4qou0b": 1781782812886,
+    "mqjfh2aur7ilg8t5n2": 1781782988299
   }
 }
