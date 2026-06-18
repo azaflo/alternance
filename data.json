@@ -12,17 +12,6 @@
       "updatedAt": 1781782798566
     },
     {
-      "id": "mqf1carrefour16juin",
-      "company": "Carrefour",
-      "position": "Analyste Cybersécurité SOC/CERT en alternance (F/H)",
-      "date": "2026-06-16",
-      "source": "Site entreprise",
-      "status": "refuse",
-      "link": "https://recrute.carrefour.fr",
-      "notes": "Ref 2026-136576 — Refus reçu le 16/06/2026 : \"Malgré la qualité de votre profil, nous ne sommes malheureusement pas en mesure de lui donner une suite favorable.\"",
-      "updatedAt": 1781600102000
-    },
-    {
       "id": "mqexzt7ohgfy1dqo0q8",
       "company": "Safran Aerosystems",
       "position": "Apprenti·e Technicien·ne Support Informatique F/H",
@@ -252,6 +241,7 @@
     "mq6jg2dxkz8a09perj": 1781003419294,
     "mq6jgfct3nnnrbxeq7a": 1781003454087,
     "mq6jit949k56hu99hhd": 1781003542122,
-    "mq59cn35dv9ca8xz6gs": 1781511585302
+    "mq59cn35dv9ca8xz6gs": 1781511585302,
+    "mqf1carrefour16juin": 1781782810013
   }
 }
