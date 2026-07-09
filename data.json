@@ -1,6 +1,38 @@
 {
   "entries": [
     {
+      "id": "mrdakxzizwgwwi8q2ac",
+      "company": "Equans (INEO Infracom)",
+      "position": "Alternance – Technicien projet système et réseau (H/F)",
+      "date": "2026-07-09",
+      "source": "Indeed",
+      "status": "envoye",
+      "link": "https://to.indeed.com/aajpj8y4frrp",
+      "notes": "",
+      "updatedAt": 1783588566798,
+      "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je prépare ma Licence Générale Informatique spécialité Cybersécurité pour la rentrée 2026. Votre offre d'alternance pour le poste de Technicien projet système et réseau au sein d'INEO Infracom (EQUANS) à Lieusaint a retenu toute mon attention — vous recherchez un étudiant préparant une licence professionnelle spécialisée dans l'administration de systèmes et réseaux, passionné par les nouvelles technologies, avec un excellent relationnel et une appétence pour les environnements smart city, ce qui correspond précisément à mon profil et à ma formation BTS SIO SISR.\n\nLes missions confiées sont particulièrement stimulantes : déploiement et maintenance de solutions infrastructure réseaux et système auprès des clients, déploiement de solutions liées aux métiers de la sûreté (vidéoprotection, contrôle d'accès, interphonie, détection d'intrusion), test et qualification de solutions smart city au sein du LAB interne, paramétrage d'équipements réseaux Cisco / ARUBA / HP, installation et configuration de systèmes d'exploitation (Windows Server, Linux), virtualisation (VMWare, Hyper-V), et rédaction de documentations techniques.\n\nMa formation BTS SIO SISR m'a permis d'acquérir des bases solides en administration réseau (TCP/IP, VLAN, switching, routage, configuration d'équipements Cisco), en déploiement et configuration de systèmes Windows Server et Linux, en virtualisation (Hyper-V / VMWare), en sécurité des accès et des infrastructures, ainsi qu'en rédaction de documentations techniques. Dynamique, rigoureux, curieux, titulaire du permis B et prêt à me déplacer en Île-de-France, je suis pleinement motivé pour m'investir au sein d'EQUANS Lieusaint et contribuer activement aux projets de déploiement d'infrastructures sûreté et smart city dans une filiale du Groupe Bouygues.\n\nJe me tiens disponible pour un entretien à votre convenance.\n\nVeuillez agréer, Madame, Monsieur, l'expression de mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
+      "hrContacts": [
+        {
+          "name": "Maxime Ancelin",
+          "email": "",
+          "linkedin": "https://fr.linkedin.com/in/maxime-ancelin-90aa30145"
+        },
+        {
+          "name": "Steven M",
+          "email": "",
+          "linkedin": "https://fr.linkedin.com/in/steven-m-b5b123110?trk=people-guest_people_search-card"
+        },
+        {
+          "name": "Charlotte Henon",
+          "email": "",
+          "linkedin": "https://fr.linkedin.com/in/charlotte-henon-26b171a2"
+        }
+      ],
+      "careerUrl": "https://to.indeed.com/aajpj8y4frrp",
+      "location": "Lieusaint (77) · ~10 km",
+      "offerId": "equans-technicien-projet-systeme-reseau-lieusaint-77"
+    },
+    {
       "id": "mqjj39lqaefnh5uufci",
       "company": "M6",
       "position": "Assistant(e) support informatique aux utilisateurs",
