@@ -313,95 +313,17 @@
     }
     .offer-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
 
-    .coming-soon {
-      text-align: center;
-      padding: 36px 24px;
-      color: var(--text-muted);
-      font-size: 13px;
-    }
-    .coming-soon .icon { font-size: 36px; margin-bottom: 10px; }
-    .coming-soon strong { display: block; color: var(--text); margin-bottom: 6px; font-size: 15px; }
-
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
-
-    /* ── Cover letter modal ── */
-    .lm-modal-overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.75);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-    }
-    .lm-modal-overlay.open { display: flex; }
-    .lm-modal {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      width: 100%;
-      max-width: 660px;
-      margin: 16px;
-      display: flex;
-      flex-direction: column;
-      max-height: 90vh;
-    }
-    .lm-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 22px 14px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .lm-header h3 { font-size: 16px; font-weight: 600; }
-    .lm-header .lm-company { color: var(--text-muted); font-size: 13px; margin-top: 2px; }
-    .lm-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 22px;
-    }
-    .lm-body pre {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      font-size: 13.5px;
-      line-height: 1.75;
-      white-space: pre-wrap;
-      word-break: break-word;
-      color: var(--text);
-    }
-    .lm-footer {
-      padding: 14px 22px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      flex-shrink: 0;
-    }
-    .btn-copy-success { background: var(--green) !important; }
-    .btn-send { background: #16a34a22; color: #4ade80; border: 1px solid #22c55e44; }
-    .btn-send:hover { background: #16a34a44; }
-    .btn-direct { background: #7c3aed22; color: #a78bfa; border: 1px solid #7c3aed44; }
-    .btn-direct:hover { background: #7c3aed44; }
 
     /* ── HR contacts in table ── */
     .hr-contacts-cell { font-size: 12px; }
     .hr-contacts-cell a { color: #a78bfa; }
     .hr-contacts-cell .hr-email { color: #86efac; }
 
-    /* ── Offres suivies ── */
-    .offer-applied { filter: grayscale(0.8); opacity: 0.6; }
-    .offer-applied .offer-actions button,
-    .offer-applied .offer-actions a { pointer-events: none; cursor: default; }
-    .offers-applied-header {
-      padding: 14px 24px 4px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--green);
-      text-transform: uppercase;
-      letter-spacing: .07em;
-      border-top: 1px solid var(--border);
-      margin-top: 4px;
-    }
+    /* ── Email badge copiable ── */
+    .email-badge { cursor: pointer; }
+    .email-badge:hover { opacity: .8; }
 
     /* ── Toast ── */
     #toast {
@@ -520,30 +442,12 @@
 
       <!-- Indeed tab -->
       <div class="tab-content active" id="tab-indeed">
-        <div class="coming-soon">
-          <div class="icon">🏗️</div>
-          <strong>Intégration Indeed — bientôt disponible</strong>
-          Les offres d'emploi récupérées via Indeed apparaîtront ici automatiquement.
-        </div>
         <div id="indeed-offers"></div>
-        <div id="indeed-applied-section" style="display:none">
-          <div class="offers-applied-header">✅ Candidatures envoyées</div>
-          <div id="indeed-applied"></div>
-        </div>
       </div>
 
       <!-- LinkedIn tab -->
       <div class="tab-content" id="tab-linkedin">
-        <div class="coming-soon">
-          <div class="icon">🔗</div>
-          <strong>Intégration LinkedIn — bientôt disponible</strong>
-          Les offres d'emploi récupérées via LinkedIn apparaîtront ici automatiquement.
-        </div>
         <div id="linkedin-offers"></div>
-        <div id="linkedin-applied-section" style="display:none">
-          <div class="offers-applied-header">✅ Candidatures envoyées</div>
-          <div id="linkedin-applied"></div>
-        </div>
       </div>
     </div>
   </div>
@@ -552,25 +456,6 @@
 
 <!-- Toast -->
 <div id="toast"></div>
-
-<!-- Modal lettre de motivation -->
-<div class="lm-modal-overlay" id="lm-overlay" onclick="handleLmOverlay(event)">
-  <div class="lm-modal">
-    <div class="lm-header">
-      <div>
-        <h3 id="lm-title">Lettre de motivation</h3>
-        <div class="lm-company" id="lm-company"></div>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="closeLm()">✕</button>
-    </div>
-    <div class="lm-body"><pre id="lm-content"></pre></div>
-    <div class="lm-footer">
-      <button class="btn btn-ghost" onclick="closeLm()">Fermer</button>
-      <button class="btn btn-primary" id="lm-copy-btn" onclick="copyLm()">📋 Copier</button>
-      <button class="btn btn-send" id="lm-send-btn" onclick="sendCurrentByEmail()">📨 Envoyer via Gmail</button>
-    </div>
-  </div>
-</div>
 
 <!-- Modal ajout / édition -->
 <div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
@@ -872,71 +757,15 @@
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // COVER LETTER MODAL
+  // EMAIL — copie presse-papier
   // ══════════════════════════════════════════════════════════════════════════
 
-  let currentLmEntry = null;
-
-  function showCoverLetterForEntry(entryId) {
-    const e = entries.find(x => x.id === entryId);
-    if (!e || !e.coverLetter) return;
-    currentLmEntry = e;
-    document.getElementById('lm-title').textContent   = e.position;
-    document.getElementById('lm-company').textContent  = e.company + (e.location ? ' · ' + e.location : '');
-    document.getElementById('lm-content').textContent  = e.coverLetter;
-    document.getElementById('lm-copy-btn').textContent = '📋 Copier';
-    document.getElementById('lm-copy-btn').classList.remove('btn-copy-success');
-    document.getElementById('lm-overlay').classList.add('open');
-  }
-
-  function showCoverLetterForOffer(offerId) {
-    const data = offerLetters[offerId];
-    if (!data) return;
-    currentLmEntry = data;
-    document.getElementById('lm-title').textContent   = data.title;
-    document.getElementById('lm-company').textContent  = data.company + (data.location ? ' · ' + data.location : '');
-    document.getElementById('lm-content').textContent  = data.letter;
-    document.getElementById('lm-copy-btn').textContent = '📋 Copier';
-    document.getElementById('lm-copy-btn').classList.remove('btn-copy-success');
-    document.getElementById('lm-overlay').classList.add('open');
-  }
-
-  function closeLm() {
-    document.getElementById('lm-overlay').classList.remove('open');
-    currentLmEntry = null;
-  }
-  function handleLmOverlay(e) {
-    if (e.target === document.getElementById('lm-overlay')) closeLm();
-  }
-
-  function copyLm() {
-    const text = document.getElementById('lm-content').textContent;
-    navigator.clipboard.writeText(text).then(() => {
-      const btn = document.getElementById('lm-copy-btn');
-      btn.textContent = '✅ Copié !';
-      btn.classList.add('btn-copy-success');
-      setTimeout(() => {
-        btn.textContent = '📋 Copier';
-        btn.classList.remove('btn-copy-success');
-      }, 2000);
-    });
-  }
-
-  function sendCurrentByEmail() {
-    if (!currentLmEntry) return;
-    const e = currentLmEntry;
-    const title = e.position || e.title || '';
-    const letter = e.coverLetter || e.letter || '';
-    const hrEmail = e.hrEmail || '';
-    const subject = encodeURIComponent('Candidature alternance – ' + title + ' – Orchiller Florian – BTS SIO SISR');
-    const body = encodeURIComponent(letter);
-    const to = encodeURIComponent(hrEmail);
-    window.open('https://mail.google.com/mail/?view=cm&fs=1&to=' + to + '&su=' + subject + '&body=' + body, '_blank');
-    setTimeout(() => showToast('📎 Gmail ouvert — pense à joindre ton CV en pièce jointe !'), 800);
+  function copyEmail(email) {
+    navigator.clipboard.writeText(email).then(() => showToast('📋 ' + email + ' copié !'));
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // RENDER TABLE — V2: avec contacts RH + bouton lettre
+  // RENDER TABLE — V2: avec contacts RH
   // ══════════════════════════════════════════════════════════════════════════
 
   function renderHrContacts(e) {
@@ -1005,7 +834,6 @@
             ${escHtml(e.notes) || '—'}
           </td>
           <td style="white-space:nowrap">
-            ${e.coverLetter ? `<button class="btn btn-ghost btn-sm" onclick="showCoverLetterForEntry('${e.id}')" title="Lettre de motivation">✉️</button>` : ''}
             <button class="btn btn-ghost btn-sm" onclick="openModal('${e.id}')">✏️</button>
             <button class="btn btn-danger btn-sm" onclick="deleteEntry('${e.id}')">🗑️</button>
           </td>
@@ -1123,12 +951,9 @@
         if (o.location)     newEntry.location    = o.location;
         if (o.id)           newEntry.offerId     = o.id;
 
-        // Griser la carte offre
+        // Retirer la carte de la liste des offres
         const card = document.getElementById('offer-card-' + o.id);
-        if (card) {
-          card.style.opacity = '0.35';
-          card.style.pointerEvents = 'none';
-        }
+        if (card) card.remove();
       }
 
       entries.unshift(newEntry);
@@ -1166,73 +991,69 @@
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // INJECT OFFERS — V3: section "candidatures envoyées" + tri ordre injection
+  // INJECT OFFERS
   // ══════════════════════════════════════════════════════════════════════════
 
-  const offerLetters  = {};
-  const offersCache   = {};
+  const offersCache    = {};
   const offersBySource = {};
+
+  // Offres masquées persistées dans localStorage
+  const dismissedOfferIds = new Set(JSON.parse(localStorage.getItem('dismissed_offers') || '[]'));
 
   function isOfferTracked(offerId) {
     return entries.some(e => e.offerId === offerId);
   }
 
-  function renderOfferCard(o, applied) {
+  function dismissOffer(id) {
+    if (!confirm('Masquer définitivement cette offre ?')) return;
+    dismissedOfferIds.add(id);
+    localStorage.setItem('dismissed_offers', JSON.stringify([...dismissedOfferIds]));
+    const card = document.getElementById('offer-card-' + id);
+    if (card) card.remove();
+  }
+
+  function renderOfferCard(o) {
+    const emailTags = [];
+    if (o.hrEmail) {
+      emailTags.push(`<span class="tag email-badge" style="color:#86efac;border-color:#22c55e44" onclick="copyEmail('${escHtml(o.hrEmail)}')" title="Copier l'email">✉ ${escHtml(o.hrEmail)}</span>`);
+    }
+    (o.hrContacts || []).filter(c => c.email).forEach(c => {
+      emailTags.push(`<span class="tag email-badge" style="color:#a78bfa;border-color:#7c3aed44" onclick="copyEmail('${escHtml(c.email)}')" title="${escHtml(c.name)} — copier">✉ ${escHtml(c.email)}</span>`);
+    });
+    if (emailTags.length === 0) {
+      emailTags.push(`<span class="tag" style="color:#f87171;border-color:#ef444444">✉ email non public</span>`);
+    }
+    const linkedinTags = (o.hrContacts || []).filter(c => c.linkedin && !c.email).map(c =>
+      `<a href="${escHtml(c.linkedin)}" target="_blank" class="tag" style="color:#7b9dff;border-color:#4f6ef744;text-decoration:none">👤 ${escHtml(c.name)}</a>`
+    ).join('');
+
     return `
-    <div class="offer-card${applied ? ' offer-applied' : ''}" id="offer-card-${o.id}">
+    <div class="offer-card" id="offer-card-${o.id}">
       <div class="offer-logo">${o.logo || '🏢'}</div>
       <div class="offer-info">
         <div class="title">${escHtml(o.title)}</div>
         <div class="company">${escHtml(o.company)} · ${escHtml(o.location || '')}</div>
         <div class="offer-tags">
           ${(o.tags || []).map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}
-          ${o.hrEmail
-            ? `<span class="tag" style="color:#86efac;border-color:#22c55e44">✉ ${escHtml(o.hrEmail)}</span>`
-            : '<span class="tag" style="color:#f87171;border-color:#ef444444">✉ email non public</span>'}
-          ${(o.hrContacts || []).filter(c => c.email).map(c => `
-            <span class="tag" style="color:#a78bfa;border-color:#7c3aed44" title="${escHtml(c.name)}">✉ ${escHtml(c.email)}</span>
-          `).join('')}
-          ${(o.hrContacts || []).filter(c => c.linkedin && !c.email).map(c => `
-            <a href="${escHtml(c.linkedin)}" target="_blank" class="tag" style="color:#7b9dff;border-color:#4f6ef744;text-decoration:none">👤 ${escHtml(c.name)}</a>
-          `).join('')}
+          ${emailTags.join('')}
+          ${linkedinTags}
         </div>
       </div>
       <div class="offer-actions">
         ${o.url ? `<a href="${escHtml(o.url)}" target="_blank" class="btn btn-ghost btn-sm">Indeed</a>` : ''}
-        ${o.careerUrl && o.careerUrl !== o.url ? `<a href="${escHtml(o.careerUrl)}" target="_blank" class="btn btn-direct btn-sm">🏢 Portail</a>` : ''}
-        ${o.coverLetter ? `<button class="btn btn-ghost btn-sm" onclick="showCoverLetterForOffer('${o.id}')">✉️ Lettre</button>` : ''}
-        ${applied
-          ? `<span class="btn btn-sm" style="color:var(--green);cursor:default">✓ Suivi</span>`
-          : `<button class="btn btn-primary btn-sm" onclick="prefillFromOffer('${o.id}')">+ Suivi</button>`
-        }
+        <button class="btn btn-primary btn-sm" onclick="prefillFromOffer('${o.id}')">+ Suivi</button>
+        <button class="btn btn-danger btn-sm" onclick="dismissOffer('${o.id}')" title="Supprimer">🗑️</button>
       </div>
     </div>`;
   }
 
   function renderOffersForSource(source) {
-    const offers = offersBySource[source] || [];
-    const container       = document.getElementById(source + '-offers');
-    const appliedSection  = document.getElementById(source + '-applied-section');
-    const appliedContainer = document.getElementById(source + '-applied');
+    const container = document.getElementById(source + '-offers');
     if (!container) return;
-
-    const cs = container.previousElementSibling;
-    if (cs && cs.classList.contains('coming-soon')) cs.style.display = 'none';
-
-    const untracked = offers.filter(o => !isOfferTracked(o.id));
-    const tracked   = offers.filter(o =>  isOfferTracked(o.id));
-
-    container.innerHTML = untracked.map(o => renderOfferCard(o, false)).join('');
-
-    if (appliedSection && appliedContainer) {
-      if (tracked.length > 0) {
-        appliedContainer.innerHTML = tracked.map(o => renderOfferCard(o, true)).join('');
-        appliedSection.style.display = 'block';
-      } else {
-        appliedContainer.innerHTML = '';
-        appliedSection.style.display = 'none';
-      }
-    }
+    const visible = (offersBySource[source] || []).filter(o =>
+      !isOfferTracked(o.id) && !dismissedOfferIds.has(o.id)
+    );
+    container.innerHTML = visible.map(o => renderOfferCard(o)).join('');
   }
 
   function refreshAllOffers() {
@@ -1245,38 +1066,25 @@
   }
 
   window.injectOffers = function(source, offers) {
-    // Filtre : 45km max (rien au-dessus)
-    const filtered = offers.filter(o => getDistanceKm(o) <= 45);
-
-    // Fusion avec déduplication par ID (plusieurs appels injectOffers s'accumulent)
+    // Filtre distance 45km + offres déjà masquées
+    const filtered = offers.filter(o => getDistanceKm(o) <= 45 && !dismissedOfferIds.has(o.id));
+    // Fusion avec déduplication par ID
     const existing = offersBySource[source] || [];
     const existingIds = new Set(existing.map(o => o.id));
     offersBySource[source] = [...existing, ...filtered.filter(o => !existingIds.has(o.id))];
-    filtered.forEach(o => {
-      offersCache[o.id] = o;
-      if (o.coverLetter) {
-        offerLetters[o.id] = {
-          title: o.title, company: o.company, location: o.location || '',
-          letter: o.coverLetter, hrEmail: o.hrEmail || ''
-        };
-      }
-    });
+    filtered.forEach(o => { offersCache[o.id] = o; });
     renderOffersForSource(source);
   };
 
   window.prefillFromOffer = function(offerId) {
     const o = offersCache[offerId];
     if (!o) return;
-
-    openModal();
     pendingOfferData = o;
-
-    setTimeout(() => {
-      document.getElementById('f-company').value  = o.company || '';
-      document.getElementById('f-position').value = o.title   || '';
-      document.getElementById('f-link').value     = o.url     || '';
-      document.getElementById('f-source').value   = 'Indeed';
-    }, 50);
+    openModal();
+    document.getElementById('f-company').value  = o.company || '';
+    document.getElementById('f-position').value = o.title   || '';
+    document.getElementById('f-link').value     = o.url     || '';
+    document.getElementById('f-source').value   = 'Indeed';
   };
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -1284,7 +1092,7 @@
   // ══════════════════════════════════════════════════════════════════════════
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeModal(); closeLm(); closeSettings(); }
+    if (e.key === 'Escape') { closeModal(); closeSettings(); }
     if (e.key === 'Enter' && document.getElementById('modal-overlay').classList.contains('open') && e.ctrlKey) saveEntry();
   });
 
