@@ -65,17 +65,6 @@
       "offerId": "safran-technicien-support-soignolles-77"
     },
     {
-      "id": "mq5bd3por5x1r41jazl",
-      "company": "SAFRAN",
-      "position": "Incident Manager",
-      "date": "2026-06-08",
-      "source": "Site entreprise",
-      "status": "envoye",
-      "link": "https://www.safran-group.com/fr/offres/france/massy/alternance-incident-manager-fh-180295#",
-      "notes": "en attente site :",
-      "updatedAt": 1781005294785
-    },
-    {
       "id": "mq58jzq0yo8ei1ll1fd",
       "company": "VINCI Construction – SOLUMAT",
       "position": "Apprenti informatique / Support SI F/H",
@@ -198,6 +187,7 @@
     "mq6k6kvk0ziot5i4kame": 1784728616451,
     "mq6ejy1q4h6etg3pc2o": 1784728618091,
     "mq54uhnvvgmfjhzdr2m": 1784728620275,
-    "mq6kd9m8r73xhkch4b": 1784728622523
+    "mq6kd9m8r73xhkch4b": 1784728622523,
+    "mq5bd3por5x1r41jazl": 1784728625315
   }
 }
