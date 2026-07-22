@@ -44,17 +44,6 @@
       "updatedAt": 1782172800000
     },
     {
-      "id": "mqjhqmxjwtigx5rq02",
-      "company": "HERMES",
-      "position": "Technicien support",
-      "date": "2026-06-18",
-      "source": "Autre",
-      "status": "envoye",
-      "link": "https://www.welcometothejungle.com/fr/companies/hermes/jobs/alternance-assistant-support-outils-securite-h-f_pantin_HERMS_elRXlM0",
-      "notes": "https://fa-eoic-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/fr/sites/CX/my-profile",
-      "updatedAt": 1781786604439
-    },
-    {
       "id": "mqexzt7ohgfy1dqo0q8",
       "company": "Safran Aerosystems",
       "position": "Apprenti·e Technicien·ne Support Informatique F/H",
@@ -279,6 +268,7 @@
     "mqjfh2aur7ilg8t5n2": 1781782988299,
     "mrdalfx2260n6eka985": 1784728607586,
     "mqjfz5odeqmew27zmwn": 1784728609658,
-    "mqjh5cgzyepd3m0kdh7": 1784728611442
+    "mqjh5cgzyepd3m0kdh7": 1784728611442,
+    "mqjhqmxjwtigx5rq02": 1784728613098
   }
 }
