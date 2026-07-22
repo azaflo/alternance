@@ -33,17 +33,6 @@
       "offerId": "equans-technicien-projet-systeme-reseau-lieusaint-77"
     },
     {
-      "id": "mqjj39lqaefnh5uufci",
-      "company": "M6",
-      "position": "Assistant(e) support informatique aux utilisateurs",
-      "date": "2026-06-18",
-      "source": "",
-      "status": "refuse",
-      "link": "https://www.welcometothejungle.com/fr/companies/groupem6/jobs/alternance-assistant-support-informatique-aux-utilisateurs-h-f_neuilly-sur-seine_GM_LDLl4dQ",
-      "notes": "https://groupe-m6.talentview.io/jobs/9s1fu2/apply?source=wttj",
-      "updatedAt": 1782172800000
-    },
-    {
       "id": "mqexzt7ohgfy1dqo0q8",
       "company": "Safran Aerosystems",
       "position": "Apprenti·e Technicien·ne Support Informatique F/H",
@@ -269,6 +258,7 @@
     "mrdalfx2260n6eka985": 1784728607586,
     "mqjfz5odeqmew27zmwn": 1784728609658,
     "mqjh5cgzyepd3m0kdh7": 1784728611442,
-    "mqjhqmxjwtigx5rq02": 1784728613098
+    "mqjhqmxjwtigx5rq02": 1784728613098,
+    "mqjj39lqaefnh5uufci": 1784728614610
   }
 }
