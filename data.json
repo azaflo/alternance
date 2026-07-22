@@ -76,17 +76,6 @@
       "updatedAt": 1781005270465
     },
     {
-      "id": "mq6k6kvk0ziot5i4kame",
-      "company": "jiliti",
-      "position": "Technicien Support Informatique & Reconditionnement",
-      "date": "2026-06-09",
-      "source": "",
-      "status": "refuse",
-      "link": "https://www.hellowork.com/fr-fr/emplois/79856900.html",
-      "notes": "",
-      "updatedAt": 1782864000000
-    },
-    {
       "id": "mq6ejy1q4h6etg3pc2o",
       "company": "Docaposte",
       "position": "Administrateur Poste de Travail – Alternance F/H",
@@ -259,6 +248,7 @@
     "mqjfz5odeqmew27zmwn": 1784728609658,
     "mqjh5cgzyepd3m0kdh7": 1784728611442,
     "mqjhqmxjwtigx5rq02": 1784728613098,
-    "mqjj39lqaefnh5uufci": 1784728614610
+    "mqjj39lqaefnh5uufci": 1784728614610,
+    "mq6k6kvk0ziot5i4kame": 1784728616451
   }
 }
