@@ -1,39 +1,6 @@
 {
   "entries": [
     {
-      "id": "mrdalfx2260n6eka985",
-      "company": "ISOSKELE",
-      "position": "Alternance - Administrateur système et réseaux F/H/X",
-      "date": "2026-07-09",
-      "source": "Indeed",
-      "status": "refuse",
-      "link": "https://to.indeed.com/aa2bx6cl7n8m",
-      "notes": "",
-      "updatedAt": 1784016000000,
-      "coverLetter": "Madame, Monsieur,\n\nActuellement en deuxième année de BTS SIO option SISR au CFA UTEC, je recherche un contrat d'apprentissage pour préparer ma Licence Générale Informatique spécialité Cybersécurité à la rentrée 2026. Votre offre d'alternance pour le poste d'Administrateur système et réseaux au sein d'ISOSKELE à Paris a retenu toute mon attention — vous recherchez un étudiant de niveau Bac+3/4 en informatique, maîtrisant les environnements Windows Server, Azure/Entra ID, Intune et Microsoft 365, avec des connaissances en cybersécurité, ce qui correspond exactement à mon profil et à ma formation BTS SIO SISR.\n\nRejoindre l'équipe IT et sécurité d'ISOSKELE — assurer le support utilisateurs de niveaux 1, 2 et 3, administrer les interfaces Administrateur Microsoft 365 (Exchange, SharePoint, Teams), installer et paramétrer des serveurs physiques et virtuels, assurer la maintenance des équipements réseaux du site, mettre en place de nouvelles stratégies de cybersécurité, contribuer aux mises à jour sécurité du parc informatique, maintenir la satisfaction du support utilisateur et participer à la gestion de projets IT en cours ou de nouveaux projets — représente un ensemble de missions transverses et structurantes au sein d'un groupe data marketing pionnier, élu Groupe Data marketing de l'année, classé dans le top 20 des 500 agences françaises (Stratégies), fort de 450 collaborateurs et 100M€ de CA, combinant créativité, data et technologies digitales au travers de cinq marques hyper-expertes.\n\nMa formation BTS SIO SISR m'a permis d'acquérir des bases solides en administration Windows Server et Active Directory, en Azure/Entra ID et Intune, en DHCP et DNS, en outils collaboratifs Microsoft 365 (Exchange, Teams, SharePoint), en notions de cybersécurité et de sécurisation des postes de travail, ainsi qu'en support utilisateurs et gestion des incidents via ticketing. Autodidacte, curieux, rigoureux et doté d'un bon esprit d'équipe et d'initiative, je suis pleinement motivé pour m'investir au sein de votre équipe IT et contribuer à la performance et à la sécurité du système d'information d'ISOSKELE.\n\nJe me tiens disponible pour un entretien à votre convenance.\n\nVeuillez agréer, Madame, Monsieur, l'expression de mes sincères salutations.\n\nOrchiller Florian\n0624074245 | florian.orchiller@gmail.com",
-      "hrEmail": "jerome.thomas@isoskele.fr",
-      "hrContacts": [
-        {
-          "name": "Jerome Thomas",
-          "email": "jerome.thomas@isoskele.fr",
-          "linkedin": "https://fr.linkedin.com/in/jerome-thomas-0152a88"
-        },
-        {
-          "name": "Alexis Da",
-          "email": "",
-          "linkedin": "https://fr.linkedin.com/in/alexis-da-silva-43b779178"
-        },
-        {
-          "name": "Chloe Au",
-          "email": "chloe.au@isoskele.fr",
-          "linkedin": "https://fr.linkedin.com/in/chloe-au-rh"
-        }
-      ],
-      "careerUrl": "https://to.indeed.com/aa2bx6cl7n8m",
-      "location": "Paris (75) · ~41 km",
-      "offerId": "isoskele-admin-systeme-reseaux-paris"
-    },
-    {
       "id": "mrdakxzizwgwwi8q2ac",
       "company": "Equans (INEO Infracom)",
       "position": "Alternance – Technicien projet système et réseau (H/F)",
@@ -331,6 +298,7 @@
     "mq59cn35dv9ca8xz6gs": 1781511585302,
     "mqf1carrefour16juin": 1781782810013,
     "mq5b8qrqno8je4qou0b": 1781782812886,
-    "mqjfh2aur7ilg8t5n2": 1781782988299
+    "mqjfh2aur7ilg8t5n2": 1781782988299,
+    "mrdalfx2260n6eka985": 1784728607586
   }
 }
