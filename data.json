@@ -65,17 +65,6 @@
       "offerId": "safran-technicien-support-soignolles-77"
     },
     {
-      "id": "mq6kd9m8r73xhkch4b",
-      "company": "CUBE",
-      "position": "Apprenti technicien(ne) Systèmes & Réseaux Informatiques",
-      "date": "2026-06-09",
-      "source": "",
-      "status": "envoye",
-      "link": "https://candidat.francetravail.fr/offres/recherche/detail/208TGPV",
-      "notes": "PDG : Cyrille PATRIGEON RH : Allan Raul / mail ou msg linkedin pour le 12 juin",
-      "updatedAt": 1781005270465
-    },
-    {
       "id": "mq5bd3por5x1r41jazl",
       "company": "SAFRAN",
       "position": "Incident Manager",
@@ -208,6 +197,7 @@
     "mqjj39lqaefnh5uufci": 1784728614610,
     "mq6k6kvk0ziot5i4kame": 1784728616451,
     "mq6ejy1q4h6etg3pc2o": 1784728618091,
-    "mq54uhnvvgmfjhzdr2m": 1784728620275
+    "mq54uhnvvgmfjhzdr2m": 1784728620275,
+    "mq6kd9m8r73xhkch4b": 1784728622523
   }
 }
