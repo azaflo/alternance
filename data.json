@@ -66,17 +66,6 @@
       "updatedAt": 1781785611107
     },
     {
-      "id": "mqjfz5odeqmew27zmwn",
-      "company": "CABAIA",
-      "position": "Technicien support informatique",
-      "date": "2026-06-18",
-      "source": "Autre",
-      "status": "refuse",
-      "link": "https://cabaia.teamtailor.com/connect/dashboard",
-      "notes": "https://www.welcometothejungle.com/fr/me/application-tracker?status=ongoing",
-      "updatedAt": 1782575715000
-    },
-    {
       "id": "mqexzt7ohgfy1dqo0q8",
       "company": "Safran Aerosystems",
       "position": "Apprenti·e Technicien·ne Support Informatique F/H",
@@ -299,6 +288,7 @@
     "mqf1carrefour16juin": 1781782810013,
     "mq5b8qrqno8je4qou0b": 1781782812886,
     "mqjfh2aur7ilg8t5n2": 1781782988299,
-    "mrdalfx2260n6eka985": 1784728607586
+    "mrdalfx2260n6eka985": 1784728607586,
+    "mqjfz5odeqmew27zmwn": 1784728609658
   }
 }
