@@ -172,17 +172,6 @@
       "careerUrl": "https://to.indeed.com/aa7s7kks77vc",
       "location": "Évry (91) · ~15 km",
       "offerId": "afm-telethon-support-informatique-evry"
-    },
-    {
-      "id": "mq54uhnvvgmfjhzdr2m",
-      "company": "BMW INDIGO",
-      "position": "Apprenti informaticien",
-      "date": "2026-06-08",
-      "source": "Réseau",
-      "status": "refuse",
-      "link": "https://www.hellowork.com/fr-fr/emplois/78193504.html#postuler",
-      "notes": "Offre trouvé par Mme THOMAS\nmail a envoyé le 10 juin",
-      "updatedAt": 1784246400000
     }
   ],
   "deleted": {
@@ -218,6 +207,7 @@
     "mqjhqmxjwtigx5rq02": 1784728613098,
     "mqjj39lqaefnh5uufci": 1784728614610,
     "mq6k6kvk0ziot5i4kame": 1784728616451,
-    "mq6ejy1q4h6etg3pc2o": 1784728618091
+    "mq6ejy1q4h6etg3pc2o": 1784728618091,
+    "mq54uhnvvgmfjhzdr2m": 1784728620275
   }
 }
