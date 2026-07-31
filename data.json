@@ -48,6 +48,28 @@
       "careerUrl": "https://to.indeed.com/aajpj8y4frrp",
       "location": "Lieusaint (77) · ~10 km",
       "offerId": "equans-technicien-projet-systeme-reseau-lieusaint-77"
+    },
+    {
+      "id": "ms8p91kv3t2mrxtruf",
+      "company": "Truffaut",
+      "position": "Apprenti Systèmes & Réseaux",
+      "date": "2026-07-30",
+      "source": "Gmail",
+      "status": "entretien",
+      "link": "",
+      "notes": "Entretien en présentiel fixé le 31/07/2026 à 17h avec Mme Ait Oumaksa (Ingénieure Systèmes & Réseaux) — 02 avenue des parcs, 91090 Lisses. Contact : M.ROGIER@truffaut.com",
+      "updatedAt": 1785421544000
+    },
+    {
+      "id": "ms9q4n8zlj5pkwyxe2",
+      "company": "INTESCIA GROUP",
+      "position": "Gestionnaire de parc informatique en alternance (H/F)",
+      "date": "2026-07-31",
+      "source": "Gmail",
+      "status": "entretien",
+      "link": "",
+      "notes": "Invitation à un entretien téléphonique reçue le 31/07/2026. Contact : ecarlier@intescia.com. Florian a confirmé sa disponibilité.",
+      "updatedAt": 1785489976000
     }
   ],
   "deleted": {
